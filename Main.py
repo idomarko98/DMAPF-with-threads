@@ -17,6 +17,7 @@ q1 = queue.PriorityQueue()
 Counter_InitMsgs = 0
 Counter_GoalMsgs= 0
 Counter_NewNodeMsgs= 0
+openListCounter = 0
 
 class Agent:
     def __init__(self, agent_id, startpoint, goal ,map ,constrains,incumbentSolutionCost,incumbentSolution):
@@ -157,7 +158,8 @@ def handle_Goal_Msg(goal_msg,agent):
 
 def handle_NewCTNode_Msg(newCTNode_msg,agent):
     constrains = copy.deepcopy(newCTNode_msg.CTNode.conflicts)
-    constrains = constrains.append(newCTNode_msg.constrains)
+    #pdb.set_trace()
+    constrains.append(newCTNode_msg.constrains)
     path, cost = find_optimal_path(agent.map, agent.startpoint, agent.goal,constrains)
     if path != None:
         # Calculate new solution cost:
@@ -173,7 +175,9 @@ def handle_NewCTNode_Msg(newCTNode_msg,agent):
             new_Solution.append(Solutoin(agent.agent_id, path, cost))
             #Create CTNodeChild
             CTNodeChild = CT_Node(new_Solution, new_Total_cost,constrains, newCTNode_msg.CTNode)
-            agent.openList.put((new_Total_cost, CTNodeChild))
+            global openListCounter
+            openListCounter=openListCounter+1
+            agent.openList.put((new_Total_cost,openListCounter, CTNodeChild))
             print('new CTNode child created and added to openlist')
         else:
             print('The incumbent solution cost is better than the new solution of NewCTNode_Msg, drop NewCTNode_Msg')
@@ -197,6 +201,7 @@ def handleNewCT_Node(new_Node,agent):
                 handle_NewCTNode_Msg(CT_Node_msg, agent)
             else:
                 msg_q = int_to_queue(i)
+                global Counter_NewNodeMsgs
                 Counter_NewNodeMsgs=Counter_NewNodeMsgs+1
                 msg_q.put((3,Counter_NewNodeMsgs,CT_Node_msg))
 
@@ -252,7 +257,6 @@ for i in range(M):
     new_agent=Agent(i,startpoints[i],goals[i],map2x2,[],math.inf,[])
     agents.append(new_agent)
     agents[i].print_agent_attributs()
-pdb.set_trace()
 '''
 Initialization Step 1:
 Find optimal path for yourself and send Init Msgs to all the agents
@@ -270,8 +274,8 @@ for i in range(M):
     CT_Root = Create_CT_Root_for_agent_id(agents[i].agent_id)
     print('\nPrint CT_root for agent{}'.format(i))
     CT_Root.print_CT_Node()
-    (agents[i].openList).put((CT_Root.totalCost,CT_Root))
-pdb.set_trace()
+    openListCounter=openListCounter+1
+    (agents[i].openList).put((CT_Root.totalCost,openListCounter,CT_Root))
 
 # Main Process(Agent Ai)
 msgsQueues=checkMsgsQueues(q0,q1)
@@ -292,7 +296,7 @@ while msgsQueues or openListsCT_nodes:
             new_Node=(agents[i].openList).get()
             #openList is Priority Queue - it pops the lowest cost every time
             if new_Node[0] < agents[i].incumbentSolutionCost:
-                handleNewCT_Node(new_Node[1],agents[i])
+                handleNewCT_Node(new_Node[2],agents[i])
             else:
                 print('all the Nodes in the open list are more expensive than incumbentSolutionCost - pop them all')
                 while(agents[i].openList).empty() == False:
