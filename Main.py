@@ -52,7 +52,10 @@ def initialization_step_1(agent):
     path, cost = find_optimal_path(agent.startpoint[0],agent.startpoint[1],
     agent.goal[0],agent.goal[1],agent.map,agent.heuristicMap,[],agent.map_cols, agent.map_rows)
     if path != []:
-        print('path: {} , cost: {}'.format(path, cost))
+        print('cost: {} path:'.format(cost))
+        for i in range(len(path)):
+            path[i].print_State()
+        pdb.set_trace()
         #Create Init Msg and send it to all the agents
         create_Send_init_msgs(path,cost,agent.agent_id)
     print('agent{}: finished Initialization step 1'.format(agent.agent_id))
@@ -251,7 +254,7 @@ def test_inset_msg():
 
 #Set the problem data
 map2x2=[[0,0],[0,0]]
-heuristicMap=[[0,1],[2,3]]#TODO:to add to attribuets
+heuristicMap=[[0,0],[0,0]]#TODO:to add to attribuets
 map_cols=2
 map_rows=2
 startpoints=[[0,0],[1,1]]

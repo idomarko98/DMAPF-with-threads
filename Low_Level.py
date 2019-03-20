@@ -91,6 +91,12 @@ def find_optimal_path(start_i,start_j,goal_i,goal_j,map,heuristicMap,constrains,
         isgoal = check_if_popedSpot_is_goal(popedSpot.state,goal_i, goal_j)
         if isgoal:
             print("path found!")
+            popedSpot.path.append(popedSpot.state)
+            g = popedSpot.g
+            h=0
+            f =g+h
+            popedSpot.g=0
+            popedSpot.f=f
             return popedSpot.path, popedSpot.f
         else:
             extand_list=create_extand_states(popedSpot.state,map_cols, map_rows)
