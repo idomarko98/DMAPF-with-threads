@@ -1,6 +1,7 @@
 import copy
 from Solution import *
 from Conflict import *
+from Low_Level import *
 import pdb
 '''
 Attributes:
@@ -58,7 +59,7 @@ class CT_Node:
         return None
 
     def compareStates(self,state1,state2):
-        if state1[0]==state2[0] and state1[1]==state2[1] and state1[2]==state2[2]:
+        if state1.i==state2.i and state1.j==state2.j and state1.time==state2.time:
             return True
         return False
 

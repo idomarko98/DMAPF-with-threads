@@ -7,6 +7,7 @@ from Solution import *
 from CT_Node import *
 import pdb
 from Conflict import *
+from Low_Level import *
 
 # global variables
 # M- Number of agents
@@ -20,7 +21,7 @@ Counter_NewNodeMsgs= 0
 openListCounter = 0
 
 class Agent:
-    def __init__(self, agent_id, startpoint, goal ,map ,constrains,incumbentSolutionCost,incumbentSolution):
+    def __init__(self, agent_id, startpoint, goal ,map ,constrains,incumbentSolutionCost,incumbentSolution,map_cols,map_rows,heuristicMap):
         # initiate  attributes
         self.agent_id=agent_id
         self.startpoint = startpoint
@@ -30,7 +31,9 @@ class Agent:
         self.openList=queue.PriorityQueue()
         self.incumbentSolutionCost=incumbentSolutionCost
         self.incumbentSolution=incumbentSolution
-
+        self.map_cols=map_cols
+        self.map_rows=map_rows
+        self.heuristicMap=heuristicMap
     # print Agent attributs for check
     def print_agent_attributs(self):
         print('agent id: {} start point:{} goal point:{} map:{} constrains:{} openList:{} incumbentSolutionCost:{} '
@@ -46,7 +49,8 @@ def initialization_step_1(agent):
     print('\nagent{}: start Initialization step 1'.format(agent.agent_id))
     #-----------------   Initialization Step 1 ------------------
     #Find optimal path for yourself
-    path, cost = find_optimal_path(agent.map, agent.startpoint, agent.goal,[])
+    path, cost = find_optimal_path(agent.startpoint[0],agent.startpoint[1],
+    agent.goal[0],agent.goal[1],agent.map,agent.heuristicMap,[],agent.map_cols, agent.map_rows)
     if path != []:
         print('path: {} , cost: {}'.format(path, cost))
         #Create Init Msg and send it to all the agents
@@ -84,11 +88,6 @@ def Create_CT_Root_for_agent_id(agent_id):
             return -1
     CT_root = CT_Node(solutions, totalCost, [], None)
     return CT_root
-
-        #TODO:to write this function
-def find_optimal_path(map, start, goal,constrains):
-    #if there id no path return path equal []
-    return [[0,0,0],[0,1,1]],2 #return path and cost
 
 
 #Create Init Msg and send it to all the agents
@@ -160,7 +159,12 @@ def handle_NewCTNode_Msg(newCTNode_msg,agent):
     constrains = copy.deepcopy(newCTNode_msg.CTNode.conflicts)
     #pdb.set_trace()
     constrains.append(newCTNode_msg.constrains)
-    path, cost = find_optimal_path(agent.map, agent.startpoint, agent.goal,constrains)
+    start_i=agent.startpoint[0]
+    start_j=agent.startpoint[1]
+    goal_i=agent.goal[0]
+    goal_j=agent.goal[1]
+    path, cost = find_optimal_path(start_i,start_j,goal_i,goal_j,agent.map,agent.heuristicMap
+                                   ,constrains, agent.map_cols,agent.map_rows)
     if path != None:
         # Calculate new solution cost:
         new_Total_cost = cost
@@ -221,7 +225,6 @@ def create_Send_goal_msgs(new_Node, agent_id):
     print('agent{}: done handle New CT_Node'.format(agent_id))
     ########################test - insert NewCTNode_Msg to q0############
 
-
 def test_inset_msg():
     goal_solutions = [Solutoin(0, [[0, 0], [1, 1]], 2), Solutoin(1, [[1, 0], [1, 0], [0, 1]], 3)]
     CT_goal = CT_Node(goal_solutions, 5, [], None)
@@ -248,13 +251,16 @@ def test_inset_msg():
 
 #Set the problem data
 map2x2=[[0,0],[0,0]]
+heuristicMap=[[0,1],[2,3]]#TODO:to add to attribuets
+map_cols=2
+map_rows=2
 startpoints=[[0,0],[1,1]]
 goals=[[1,1],[0,1]]
 agents=[]
 
 #initiate M agents
 for i in range(M):
-    new_agent=Agent(i,startpoints[i],goals[i],map2x2,[],math.inf,[])
+    new_agent=Agent(i,startpoints[i],goals[i],map2x2,[],math.inf,[],map_cols,map_rows,heuristicMap)
     agents.append(new_agent)
     agents[i].print_agent_attributs()
 '''
