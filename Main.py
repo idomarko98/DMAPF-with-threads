@@ -8,6 +8,7 @@ from CT_Node import *
 import pdb
 from Conflict import *
 from Low_Level import *
+from Conform_map import *
 
 # global variables
 # M- Number of agents
@@ -254,17 +255,23 @@ def test_inset_msg():
 ##########################Main############################
 
 #Set the problem data
-map2x2=[[0,0],[0,0]]
-heuristicMap=[[0,0],[0,0]]#TODO:to add to attribuets
-map_cols=2
-map_rows=2
-startpoints=[[0,0],[1,1]]
-goals=[[1,1],[1,0]]
+#map_rows,map_cols,map= txtfile_to_2D_map('map1_22X28.txt')
+map4x4=[[1,0,0,1],[0,0,0,0],[0,0,0,0],[1,0,0,1]]
+
+map3x4=[[0,1,1,0],
+        [0,1,0,0],
+        [0,0,0,0]]
+map_cols=4
+map_rows=4
+#heuristicMap=[[0,0],[0,0]]#TODO:to add to attribuets
+heuristicMap = [[0]*map_cols for _ in range(map_rows)]
+startpoints=[[0,1],[1,0]]
+goals=[[3,2],[2,3]]
 agents=[]
 
 #initiate M agents
 for i in range(M):
-    new_agent=Agent(i,startpoints[i],goals[i],map2x2,[],math.inf,[],map_cols,map_rows,heuristicMap)
+    new_agent=Agent(i,startpoints[i],goals[i],map4x4,[],math.inf,[],map_cols,map_rows,heuristicMap)
     agents.append(new_agent)
     agents[i].print_agent_attributs()
 '''
