@@ -1,5 +1,5 @@
 import copy
-
+from Low_Level import *
 '''
 Attributes:
 Agent id – identify number of the agent (of the thread)
@@ -13,8 +13,9 @@ class Solutoin:
         self.path =copy.deepcopy(path)
         self.cost = cost
     def print_Solutoin(self):
-        msg= "Print solution: Agent_Id:{}, path:{}, path cost: {}."  # 3 {} placeholders
-        print(msg.format(self.agent_Id, self.path, self.cost))  # Pass 3 strings into method, separated by a comma
-
+        msg= "Print solution: Agent_Id:{}, path cost: {}."  # 3 {} placeholders
+        print(msg.format(self.agent_Id, self.cost))  # Pass 3 strings into method, separated by a comma
+        for i in range(len(self.path)):
+            self.path[i].print_State()
 #solutoin = Solutoin(1,[(1,2,0),(2,2,1)],1)
 #solutoin.print_Solutoin()

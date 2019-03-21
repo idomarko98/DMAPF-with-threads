@@ -53,13 +53,14 @@ def initialization_step_1(agent):
     agent.goal[0],agent.goal[1],agent.map,agent.heuristicMap,[],agent.map_cols, agent.map_rows)
     if path != []:
         print('cost: {} path:'.format(cost))
-        for i in range(len(path)):
-            path[i].print_State()
-        pdb.set_trace()
+        print_path(path)
         #Create Init Msg and send it to all the agents
         create_Send_init_msgs(path,cost,agent.agent_id)
     print('agent{}: finished Initialization step 1'.format(agent.agent_id))
 
+def print_path(path):
+    for i in range(len(path)):
+        path[i].print_State()
 '''
 Initialization Step 2:
 check that agent received all the init msgs 
@@ -160,7 +161,6 @@ def handle_Goal_Msg(goal_msg,agent):
 
 def handle_NewCTNode_Msg(newCTNode_msg,agent):
     constrains = copy.deepcopy(newCTNode_msg.CTNode.conflicts)
-    #pdb.set_trace()
     constrains.append(newCTNode_msg.constrains)
     start_i=agent.startpoint[0]
     start_j=agent.startpoint[1]
@@ -168,24 +168,25 @@ def handle_NewCTNode_Msg(newCTNode_msg,agent):
     goal_j=agent.goal[1]
     path, cost = find_optimal_path(start_i,start_j,goal_i,goal_j,agent.map,agent.heuristicMap
                                    ,constrains, agent.map_cols,agent.map_rows)
+    print('print new path:')
+    print_path(path)
     if path != None:
         # Calculate new solution cost:
         new_Total_cost = cost
         for i in range(M):
             if newCTNode_msg.CTNode.solutions[i].agent_Id != newCTNode_msg.destination:
                 new_Total_cost =new_Total_cost + newCTNode_msg.CTNode.solutions[i].cost
-            else:
-                new_Total_cost=new_Total_cost+cost
         if new_Total_cost < agent.incumbentSolutionCost:
+            #pdb.set_trace()
             new_Solution = copy.deepcopy(newCTNode_msg.CTNode.solutions)
             # To add: find index of solution of agent t.name
-            new_Solution.append(Solutoin(agent.agent_id, path, cost))
+            new_Solution[agent.agent_id]=Solutoin(agent.agent_id, path, cost)
             #Create CTNodeChild
             CTNodeChild = CT_Node(new_Solution, new_Total_cost,constrains, newCTNode_msg.CTNode)
             global openListCounter
             openListCounter=openListCounter+1
             agent.openList.put((new_Total_cost,openListCounter, CTNodeChild))
-            print('new CTNode child created and added to openlist')
+            print('new CTNode child created and addedm to openlist')
         else:
             print('The incumbent solution cost is better than the new solution of NewCTNode_Msg, drop NewCTNode_Msg')
     print('Done')
@@ -258,7 +259,7 @@ heuristicMap=[[0,0],[0,0]]#TODO:to add to attribuets
 map_cols=2
 map_rows=2
 startpoints=[[0,0],[1,1]]
-goals=[[1,1],[0,1]]
+goals=[[1,1],[1,0]]
 agents=[]
 
 #initiate M agents
@@ -300,7 +301,7 @@ while msgsQueues or openListsCT_nodes:
             new_msg=q.get()
             handleNewMsg(new_msg[2],agents[i])
 
-        #Handle a new CTNode from OpenSet
+        #Handle a new CTNode from OpenList
         if (agents[i].openList).empty() == False:
             new_Node=(agents[i].openList).get()
             #openList is Priority Queue - it pops the lowest cost every time
@@ -315,4 +316,7 @@ while msgsQueues or openListsCT_nodes:
 
     msgsQueues = checkMsgsQueues(q0, q1)
     openListsCT_nodes = checkOpenLists(agents)
-
+#pdb.set_trace()
+for i in range(M):
+    print('Agent{} final solution cost:{}'.format(i, agents[i].incumbentSolutionCost))
+    agents[i].incumbentSolution.print_solutions()

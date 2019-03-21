@@ -26,6 +26,7 @@ class CT_Node:
     def print_solutions(self):
         for i in range(len(self.solutions)):
             self.solutions[i].print_Solutoin()
+            print()
 
     def print_CT_Node(self):
         print("print CT Node:")
@@ -53,7 +54,7 @@ class CT_Node:
         for i in range(minPathLen):
             compare_States=self.compareStates(path1[i],path2[i])
             if compare_States:
-                new_conflict=Conflict([agent1_id,agent2_id],path1[i][0],path1[i][1],path1[i][2])
+                new_conflict=Conflict([agent1_id,agent2_id],path1[i].i,path1[i].j,path1[i].time)
                 print('conflict found')
                 return new_conflict
         return None
