@@ -72,16 +72,10 @@ def create_extand_states(state, map_cols, map_rows):
     if state.j > 0:
         new_states_lists.append(State(state.i, state.j-1, state.time + 1))
     return new_states_lists
-#Calculate heuristic valu
-# e between two spots
-def heuristic(xa ,ya ,xb , yb):
-#dist = math.sqrt((xa - xb)**2 + (ya - yb)**2)
-    dist=abs(xa-xb)+abs(ya-yb)
-    return dist
+
 
 def find_optimal_path(start_i,start_j,goal_i,goal_j,map,heuristicMap,constrains, map_cols, map_rows):
-    #h_start = heuristicMap[start_i][start_j]
-    h_start=heuristic(start_i ,goal_i , start_j, goal_j)
+    h_start = heuristicMap[start_i,start_j]
     g_start=0
     f_start=h_start+g_start
     time=0
@@ -112,7 +106,7 @@ def find_optimal_path(start_i,start_j,goal_i,goal_j,map,heuristicMap,constrains,
                 possible_extension=Check_if_possible_extension(extand_list[i],dic_close_list,constrains,map)
                 if possible_extension:
                     #h=heuristicMap[extand_list[i].i][extand_list[i].j]
-                    h= heuristic(extand_list[i].i, goal_i, extand_list[i].j, goal_j)
+                    h= heuristicMap[extand_list[i].i,extand_list[i].j]
                     g=popedSpot.g+1
                     f=g+h
                     path=copy.deepcopy(popedSpot.path)

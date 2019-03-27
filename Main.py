@@ -9,6 +9,7 @@ import pdb
 from Conflict import *
 from Low_Level import *
 from Conform_map import *
+from Heuristic_Dijkstra import *
 
 # global variables
 # M- Number of agents
@@ -22,7 +23,7 @@ Counter_NewNodeMsgs= 0
 openListCounter = 0
 
 class Agent:
-    def __init__(self, agent_id, startpoint, goal ,map ,constrains,incumbentSolutionCost,incumbentSolution,map_cols,map_rows,heuristicMap):
+    def __init__(self, agent_id, startpoint, goal ,map ,constrains,incumbentSolutionCost,incumbentSolution,map_cols,map_rows):
         # initiate  attributes
         self.agent_id=agent_id
         self.startpoint = startpoint
@@ -34,7 +35,7 @@ class Agent:
         self.incumbentSolution=incumbentSolution
         self.map_cols=map_cols
         self.map_rows=map_rows
-        self.heuristicMap=heuristicMap
+        self.heuristicMap=create_Heuristic_map(map_rows,map_cols,map,(goal[0],goal[1]))
     # print Agent attributs for check
     def print_agent_attributs(self):
         print('agent id: {} start point:{} goal point:{} map:{} constrains:{} openList:{} incumbentSolutionCost:{} '
@@ -256,22 +257,27 @@ def test_inset_msg():
 
 #Set the problem data
 #map_rows,map_cols,map= txtfile_to_2D_map('map1_22X28.txt')
-map4x4=[[1,0,0,1],[0,0,0,0],[0,0,0,0],[1,0,0,1]]
+map4x4=[[1,0,0,1],
+        [0,0,0,0],
+        [0,0,0,0],
+        [1,0,0,1]]
 
 map3x4=[[0,1,1,0],
         [0,1,0,0],
         [0,0,0,0]]
+
+map3x3=[[0,1,1],
+        [0,0,1],
+        [0,1,1]]
 map_cols=4
 map_rows=4
-#heuristicMap=[[0,0],[0,0]]#TODO:to add to attribuets
-heuristicMap = [[0]*map_cols for _ in range(map_rows)]
-startpoints=[[0,1],[1,0]]
-goals=[[3,2],[2,3]]
+startpoints=[[1,0],[0,1]]
+goals=[[2,3],[3,2]]
 agents=[]
 
 #initiate M agents
 for i in range(M):
-    new_agent=Agent(i,startpoints[i],goals[i],map4x4,[],math.inf,[],map_cols,map_rows,heuristicMap)
+    new_agent=Agent(i,startpoints[i],goals[i],map4x4,[],math.inf,[],map_cols,map_rows)
     agents.append(new_agent)
     agents[i].print_agent_attributs()
 '''
@@ -279,6 +285,7 @@ Initialization Step 1:
 Find optimal path for yourself and send Init Msgs to all the agents
 '''
 for i in range(M):
+    # create_Heuristic_map(map_rows, map_cols, map3X3,(goal_i,goal_j))
     initialization_step_1(agents[i])
 '''
 Initialization Step 2:

@@ -41,7 +41,7 @@ class CT_Node:
     def find_conflicts(self):
         for i in range(len(self.solutions)):
             for j in range(len(self.solutions)):
-                if i!=j:
+                if i != j:
                     new_conflict = self.find_conflict_2path(self.solutions[i].path,self.solutions[j].path, self.solutions[i].agent_Id, self.solutions[j].agent_Id)
                     if new_conflict != None:
                         new_conflict = self.check_involved_agents(new_conflict, new_conflict.involved_Agents[0],new_conflict.involved_Agents[1])
@@ -51,12 +51,30 @@ class CT_Node:
 
     def find_conflict_2path(self,path1,path2,agent1_id, agent2_id):
         minPathLen=min(len(path1),len(path2))
-        for i in range(minPathLen):
-            compare_States=self.compareStates(path1[i],path2[i])
-            if compare_States:
-                new_conflict=Conflict([agent1_id,agent2_id],path1[i].i,path1[i].j,path1[i].time)
-                print('conflict found')
-                return new_conflict
+        maxPathLen=max(len(path1),len(path2))
+        if len(path1)> len(path2):
+            final_state_i, final_state_j,path_num = path2[len(path2)-1].i, path2[len(path2)-1].j,1
+        else:
+            final_state_i, final_state_j,path_num = path1[len(path1) - 1].i, path1[len(path1) - 1].j,2
+        for i in range(maxPathLen):
+            if i < minPathLen-1:
+                compare_States=self.compareStates(path1[i],path2[i])
+                if compare_States:
+                    new_conflict=Conflict([agent1_id,agent2_id],path1[i].i,path1[i].j,path1[i].time)
+                    print('conflict found')
+                    return new_conflict
+            else:
+                if path_num==1:
+                    if final_state_i == path1[i].i and final_state_j == path1[i].j:
+                        new_conflict = Conflict([agent1_id, agent2_id], path1[i].i, path1[i].j, path1[i].time)
+                        print('conflict found')
+                        return new_conflict
+                if path_num == 2:
+                    if path_num == 1:
+                        if final_state_i == path2[i].i and final_state_j == path2[i].j:
+                            new_conflict = Conflict([agent1_id, agent2_id], path2[i].i, path2[i].j, path2[i].time)
+                            print('conflict found')
+                            return new_conflict
         return None
 
     def compareStates(self,state1,state2):
