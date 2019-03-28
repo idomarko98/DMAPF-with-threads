@@ -3,7 +3,7 @@ import math
 import copy
 import pdb
 
-Counter=0
+Counter = 0
 class Spot:
     def __init__(self, state, f, g, h, path):
         self.state = copy.deepcopy(state)
@@ -39,10 +39,13 @@ def check_if_popedSpot_is_goal(state, goal_i, goal_j):
         return True
     return False
 
-def Check_if_possible_extension(extand_state,dic_close_list,constrains,map):
+def Check_if_possible_extension(extand_state,dic_close_list,dic_open_list,constrains,map):
     #chack if extand_state is already in closeList
-    key=str(extand_state.i)+str(extand_state.j)+str(extand_state.time)
+    key=(extand_state.i,extand_state.j,extand_state.time)
     if key in dic_close_list:
+        return False
+    #chack if extand_state is already in openList
+    if key in dic_open_list:
         return False
     # chack if extand_state is 'wall' in map
     if map[extand_state.i][extand_state.j]== 1:
@@ -80,13 +83,13 @@ def find_optimal_path(start_i,start_j,goal_i,goal_j,map,heuristicMap,constrains,
     f_start=h_start+g_start
     time=0
     start_spot=Spot(State(start_i,start_j,time),f_start,g_start,h_start,[])
-
+    dic_open_list = {}  # dictionary <Key: state(i,j,t)> Val:<Spot object>
     openList=queue.PriorityQueue()
     global Counter
     Counter = Counter + 1
     openList.put((f_start,Counter,start_spot))
+    dic_open_list[(start_spot.state.i, start_spot.state.j,start_spot.state.time)] = start_spot.f
     dic_close_list={} #dictionary <Key: state(i,j,t)> Val:<Spot object>
-
     while openList.empty() == False:
         popedSpot=openList.get()[2]
         isgoal = check_if_popedSpot_is_goal(popedSpot.state,goal_i, goal_j)
@@ -103,7 +106,7 @@ def find_optimal_path(start_i,start_j,goal_i,goal_j,map,heuristicMap,constrains,
             extand_list=create_extand_states(popedSpot.state,map_cols, map_rows)
             extand_list.append(State(popedSpot.state.i,popedSpot.state.j,popedSpot.state.time+1))
             for i in range(len(extand_list)):
-                possible_extension=Check_if_possible_extension(extand_list[i],dic_close_list,constrains,map)
+                possible_extension=Check_if_possible_extension(extand_list[i],dic_close_list,dic_open_list,constrains,map)
                 if possible_extension:
                     #h=heuristicMap[extand_list[i].i][extand_list[i].j]
                     h= heuristicMap[extand_list[i].i,extand_list[i].j]
@@ -114,7 +117,8 @@ def find_optimal_path(start_i,start_j,goal_i,goal_j,map,heuristicMap,constrains,
                     new__extensions_Spot=Spot(extand_list[i],f,g,h,path)
                     Counter=Counter+1
                     openList.put((f,Counter,new__extensions_Spot))
-            dic_close_list[str(popedSpot.state.i),str(popedSpot.state.j),str(popedSpot.state.time)]=popedSpot #TODO:check
+                    dic_open_list[(new__extensions_Spot.state.i,new__extensions_Spot.state.j,new__extensions_Spot.state.time)]=f
+            dic_close_list[(popedSpot.state.i,popedSpot.state.j,popedSpot.state.time)]=popedSpot
 
 
 

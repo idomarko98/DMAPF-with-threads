@@ -10,6 +10,7 @@ from Conflict import *
 from Low_Level import *
 from Conform_map import *
 from Heuristic_Dijkstra import *
+from Tests import *
 
 # global variables
 # M- Number of agents
@@ -17,6 +18,15 @@ M = 2
 
 q0= queue.PriorityQueue()
 q1 = queue.PriorityQueue()
+q2= queue.PriorityQueue()
+q3 = queue.PriorityQueue()
+q4= queue.PriorityQueue()
+q5 = queue.PriorityQueue()
+q6= queue.PriorityQueue()
+q7 = queue.PriorityQueue()
+q8= queue.PriorityQueue()
+q9 = queue.PriorityQueue()
+
 Counter_InitMsgs = 0
 Counter_GoalMsgs= 0
 Counter_NewNodeMsgs= 0
@@ -106,11 +116,43 @@ def create_Send_init_msgs(path,cost,agent_id):
             Counter_InitMsgs=Counter_InitMsgs+1
             q0.put((1, Counter_InitMsgs, new_init_Msg))
             print('succsed to put')
-
         elif i == 1:
             Counter_InitMsgs = Counter_InitMsgs + 1
             q1.put((1, Counter_InitMsgs, new_init_Msg))
             print('succsed to put')
+        elif i == 2:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q2.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+        elif i == 3:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q3.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+        elif i == 4:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q4.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+        elif i == 5:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q5.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+        elif i == 6:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q6.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+        elif i == 7:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q7.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+        elif i == 8:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q8.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+        elif i == 9:
+            Counter_InitMsgs = Counter_InitMsgs + 1
+            q9.put((1, Counter_InitMsgs, new_init_Msg))
+            print('succsed to put')
+
 
 
 def print_Msg_queue(queueToprint,name):
@@ -123,9 +165,26 @@ def int_to_queue(agent_id):
         return q0
     elif agent_id == 1:
         return q1
+    elif agent_id == 2:
+        return q2
+    elif agent_id == 3:
+        return q3
+    elif agent_id == 4:
+        return q4
+    elif agent_id == 5:
+        return q5
+    elif agent_id == 6:
+        return q6
+    elif agent_id == 7:
+        return q7
+    elif agent_id == 8:
+        return q8
+    elif agent_id == 9:
+        return q9
 
-def checkMsgsQueues(q0,q1):
-    if q0.empty() and q1.empty():
+def checkMsgsQueues(q0,q1,q2,q3,q4,q5,q6,q7,q8,q9):
+    if q0.empty() and q1.empty() and q2.empty() and q3.empty() and q4.empty() and q5.empty() and q6.empty() and\
+            q7.empty() and q8.empty() and q9.empty():
         print("No more msgs to handle...")
         return False
     else:
@@ -204,12 +263,12 @@ def handleNewCT_Node(new_Node,agent):
     else:
         print('there is new conflict:')
         newConflict.print_conflict()
-        for i in range(len(newConflict.involved_Agents)):
+        for i in range(M):
             #Create NewCTNode_Msg
             CT_Node_msg=NewCTNode_Msg(new_Node,newConflict,agent_id,i)
             if i == agent_id:
                 handle_NewCTNode_Msg(CT_Node_msg, agent)
-            else:
+            elif i in newConflict.involved_Agents:
                 msg_q = int_to_queue(i)
                 global Counter_NewNodeMsgs
                 Counter_NewNodeMsgs=Counter_NewNodeMsgs+1
@@ -227,6 +286,38 @@ def create_Send_goal_msgs(new_Node, agent_id):
         elif i == 1:
             Counter_GoalMsgs = Counter_GoalMsgs + 1
             q1.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 2:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q2.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 3:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q3.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 4:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q4.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 5:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q5.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 6:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q6.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 7:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q7.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 8:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q8.put((1, Counter_GoalMsgs, new_goal_Msg))
+            print('succsed to put')
+        elif i == 9:
+            Counter_GoalMsgs = Counter_GoalMsgs + 1
+            q9.put((1, Counter_GoalMsgs, new_goal_Msg))
             print('succsed to put')
     print('agent{}: done handle New CT_Node'.format(agent_id))
     ########################test - insert NewCTNode_Msg to q0############
@@ -256,28 +347,12 @@ def test_inset_msg():
 ##########################Main############################
 
 #Set the problem data
-#map_rows,map_cols,map= txtfile_to_2D_map('map1_22X28.txt')
-map4x4=[[1,0,0,1],
-        [0,0,0,0],
-        [0,0,0,0],
-        [1,0,0,1]]
-
-map3x4=[[0,1,1,0],
-        [0,1,0,0],
-        [0,0,0,0]]
-
-map3x3=[[0,1,1],
-        [0,0,1],
-        [0,1,1]]
-map_cols=4
-map_rows=4
-startpoints=[[1,0],[0,1]]
-goals=[[2,3],[3,2]]
 agents=[]
+test_map,map_cols, map_rows, M, startpoints, goals =test2()
 
 #initiate M agents
 for i in range(M):
-    new_agent=Agent(i,startpoints[i],goals[i],map4x4,[],math.inf,[],map_cols,map_rows)
+    new_agent=Agent(i,startpoints[i],goals[i],test_map,[],math.inf,[],map_cols,map_rows)
     agents.append(new_agent)
     agents[i].print_agent_attributs()
 '''
@@ -302,7 +377,7 @@ for i in range(M):
     (agents[i].openList).put((CT_Root.totalCost,openListCounter,CT_Root))
 
 # Main Process(Agent Ai)
-msgsQueues=checkMsgsQueues(q0,q1)
+msgsQueues=checkMsgsQueues(q0,q1,q2,q3,q4,q5,q6,q7,q8,q9)
 openListsCT_nodes=checkOpenLists(agents)
 while msgsQueues or openListsCT_nodes:
     '''Handle a new CTNode from OpenSet
@@ -328,9 +403,8 @@ while msgsQueues or openListsCT_nodes:
 
         print('the turn of agent{} is OVER'.format(agents[i].agent_id))
 
-    msgsQueues = checkMsgsQueues(q0, q1)
+    msgsQueues = checkMsgsQueues(q0,q1,q2,q3,q4,q5,q6,q7,q8,q9)
     openListsCT_nodes = checkOpenLists(agents)
-#pdb.set_trace()
 for i in range(M):
     print('Agent{} final solution cost:{}'.format(i, agents[i].incumbentSolutionCost))
     agents[i].incumbentSolution.print_solutions()

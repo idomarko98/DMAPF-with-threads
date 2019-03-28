@@ -25,7 +25,6 @@ class Init_Msg(Msg):
     def print_Msg(self):
         print("Init Msg")
         Msg.print_Msg(self)
-        Msg.print_Msg(self)
         msg = "path: {}, path cost: {}."  # 2 {} placeholders
         print(msg.format(self.path, self.cost)+"\n")  # Pass 2 strings into method, separated by a comma
 # Initiates a NewCTNode_Msg object with CTNode, constranins parameters.
