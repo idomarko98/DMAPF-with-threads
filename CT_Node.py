@@ -2,7 +2,7 @@ import copy
 from Solution import *
 from Conflict import *
 from Low_Level import *
-import pdb
+
 '''
 Attributes:
 1.	Solutions – array with  solution for every agent 
@@ -46,7 +46,7 @@ class CT_Node:
                     if new_conflict != None:
                         new_conflict = self.check_involved_agents(new_conflict, new_conflict.involved_Agents[0],new_conflict.involved_Agents[1])
                         return new_conflict
-        print("no conflicts")
+        #print("no conflicts")
         return None
 
     def find_conflict_2path(self,path1,path2,agent1_id, agent2_id):
@@ -61,19 +61,16 @@ class CT_Node:
                 compare_States=self.compareStates(path1[i],path2[i])
                 if compare_States:
                     new_conflict=Conflict([agent1_id,agent2_id],path1[i].i,path1[i].j,path1[i].time)
-                    print('conflict found')
                     return new_conflict
             else:
                 if path_num==1:
                     if final_state_i == path1[i].i and final_state_j == path1[i].j:
                         new_conflict = Conflict([agent1_id, agent2_id], path1[i].i, path1[i].j, path1[i].time)
-                        print('conflict found')
                         return new_conflict
                 if path_num == 2:
                     if path_num == 1:
                         if final_state_i == path2[i].i and final_state_j == path2[i].j:
                             new_conflict = Conflict([agent1_id, agent2_id], path2[i].i, path2[i].j, path2[i].time)
-                            print('conflict found')
                             return new_conflict
         return None
 
@@ -91,16 +88,4 @@ class CT_Node:
         return new_conflict
 
 
-def test_CT_Node_find_conflicts():
-    solutoin1 = Solutoin(0,[(1,2,0),(2,2,1),(1,2,0),(2,2,6)],1)
-    solutoin2 = Solutoin(1,[(0,0,0)],2)
-    solutoin3 = Solutoin(2, [(0,3,0),(2,2,1)], 2)
-
-    CT_Node1=CT_Node([solutoin1,solutoin2,solutoin3],5,[],None)
-    #CT_Node2=CT_Node([solutoin1,solutoin2],5,[],CT_Node1)
-    CT_Node1.print_CT_Node()
-    print('\n')
-    new_conflict = CT_Node1.find_conflicts()
-    if new_conflict!= None:
-        new_conflict.print_conflict()
 

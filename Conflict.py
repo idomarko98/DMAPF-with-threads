@@ -1,5 +1,4 @@
 import copy
-
 '''
 Attributes:
 1.	Involved_Agents –list of  the Agent Ids that involved in the conflict   (threads name)

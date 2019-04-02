@@ -27,6 +27,7 @@ class Init_Msg(Msg):
         Msg.print_Msg(self)
         msg = "path: {}, path cost: {}."  # 2 {} placeholders
         print(msg.format(self.path, self.cost)+"\n")  # Pass 2 strings into method, separated by a comma
+
 # Initiates a NewCTNode_Msg object with CTNode, constranins parameters.
 # InitMsg type is  3
 class NewCTNode_Msg(Msg):
@@ -57,12 +58,3 @@ class Goal_Msg(Msg):
         print(msg.format(self.CTNode_solution, self.solutionCost))  # Pass 2 strings into method, separated by a comma
 
 
-    def test(self):
-        init_Msg = Init_Msg([1],1,1,1)
-        init_Msg.print_Msg()
-
-        newCTNode_Msg=NewCTNode_Msg(['CTNode'],[],1,2)
-        newCTNode_Msg.print_Msg()
-
-        goal_Msg = Goal_Msg('CTNode_solution',5,1,2)
-        goal_Msg.print_Msg()
