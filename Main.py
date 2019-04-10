@@ -293,72 +293,73 @@ def Create_CT_Roots_for_M_agents(agents,M,counters):
 
 
 def Main_program():
-    #Set the problem data
-    agents=[]
-    counters=Counters()
-    test_map,map_cols, map_rows, M, startpoints, goals =test_maze32x32_2()
-    start = time.time()
-    # list of Priority Queues msgs
-    MsgsQueues = []
-    for i in range(M):
-        MsgsQueues.append(queue.PriorityQueue())
-    #initiate M agents
-    for i in range(M):
-        new_agent=Agent(i,startpoints[i],goals[i],test_map,[],math.inf,[],map_cols,map_rows,MsgsQueues)
-        agents.append(new_agent)
-        if Print_flag == 1:
-            agents[i].print_agent_attributs()
-    initialization_step_1_M_agents(agents,M,counters)
-    initialization_step_2_M_agents(agents, M)
-    Create_CT_Roots_for_M_agents(agents, M,counters)
-
-    # Main Process(Agent Ai)
-    msgsQueues = checkMsgsQueues(agents[0].MsgsQueues)
-    openListsCT_nodes = checkOpenLists(agents,M)
-    while msgsQueues or openListsCT_nodes:
-        '''Handle a new CTNode from OpenSet
-        Handle Incoming Messages'''
-        counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
+    numOfAgents=6
+    for CnumOfAgents in range(numOfAgents):
+        print('________________________{} Agents______________________________'.format(CnumOfAgents+1))
+        #Set the problem data
+        agents=[]
+        counters=Counters()
+        test_map,map_cols, map_rows, M, startpoints, goals =empty48x48(CnumOfAgents+1)
+        start = time.time()
+        # list of Priority Queues msgs
+        MsgsQueues = []
         for i in range(M):
+            MsgsQueues.append(queue.PriorityQueue())
+        #initiate M agents
+        for i in range(M):
+            new_agent=Agent(i,startpoints[i],goals[i],test_map,[],math.inf,[],map_cols,map_rows,MsgsQueues)
+            agents.append(new_agent)
             if Print_flag == 1:
-                print('the turn of agent{} is START'.format(agents[i].agent_id))
-            # Handle Incoming Messages
-            q=agents[i].MsgsQueues[agents[i].agent_id]
-            if q.empty() == False:
-                new_msg = q.get()
-                handleNewMsg(new_msg[2], agents[i],counters,M)
+                agents[i].print_agent_attributs()
+        initialization_step_1_M_agents(agents,M,counters)
+        initialization_step_2_M_agents(agents, M)
+        Create_CT_Roots_for_M_agents(agents, M,counters)
 
-            # Handle a new CTNode from OpenList
-            if (agents[i].openList).empty() == False:
-                new_Node = (agents[i].openList).get()
-                # openList is Priority Queue - it pops the lowest cost every time
-                if new_Node[0] < agents[i].incumbentSolutionCost:
-                    handleNewCT_Node(new_Node[2], agents[i],M,counters)
-                else:
-                    if Print_flag == 1:
-                        print(
-                            'all the Nodes in the open list are more expensive than incumbentSolutionCost - pop them all')
-                    while (agents[i].openList).empty() == False:
-                        (agents[i].openList).get()
-            if Print_flag == 1:
-                print('the turn of agent{} is OVER'.format(agents[i].agent_id))
-
+        # Main Process(Agent Ai)
         msgsQueues = checkMsgsQueues(agents[0].MsgsQueues)
         openListsCT_nodes = checkOpenLists(agents,M)
-    end = time.time()
-    total_msgs = counters.Counter_InitMsgs + counters.Counter_GoalMsgs + counters.Counter_NewNodeMsgs
+        while msgsQueues or openListsCT_nodes:
+            '''Handle a new CTNode from OpenSet
+            Handle Incoming Messages'''
+            counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
+            for i in range(M):
+                if Print_flag == 1:
+                    print('the turn of agent{} is START'.format(agents[i].agent_id))
+                # Handle Incoming Messages
+                q=agents[i].MsgsQueues[agents[i].agent_id]
+                if q.empty() == False:
+                    new_msg = q.get()
+                    handleNewMsg(new_msg[2], agents[i],counters,M)
 
-    #
-    # ###results##
-    print('Agent{} final solution cost:{}'.format(0, agents[0].incumbentSolutionCost))
-    agents[0].incumbentSolution.print_solutions()
-    print('Msgs-Counter:')
-    print('Counter_InitMsgs:{}\nCounter_GoalMsgs:{}\nCounter_NewNodeMsgs:{}'.format(counters.Counter_InitMsgs,counters.Counter_GoalMsgs,counters.Counter_NewNodeMsgs))
-    print('Total number of Msgs:{}'.format(total_msgs))
-    print('RoundRobin_Iterations:{}\nCounter expanded Nodes:{}'.format(counters.RoundRobin_Iterations,counters.Counter_expand_Nodes))
-    print('time taken: {}'.format(end - start))
+                # Handle a new CTNode from OpenList
+                if (agents[i].openList).empty() == False:
+                    new_Node = (agents[i].openList).get()
+                    # openList is Priority Queue - it pops the lowest cost every time
+                    if new_Node[0] < agents[i].incumbentSolutionCost:
+                        handleNewCT_Node(new_Node[2], agents[i],M,counters)
+                    else:
+                        if Print_flag == 1:
+                            print(
+                                'all the Nodes in the open list are more expensive than incumbentSolutionCost - pop them all')
+                        while (agents[i].openList).empty() == False:
+                            (agents[i].openList).get()
+                if Print_flag == 1:
+                    print('the turn of agent{} is OVER'.format(agents[i].agent_id))
 
-    #df=add_new_result_to_cvs('empty-8-8.map-1.scen','empty-8-8',M,agents[0].incumbentSolutionCost,end - start,Counter_InitMsgs,Counter_NewNodeMsgs,Counter_GoalMsgs,total_msgs,Counter_expand_Nodes,RoundRobin_Iterations)
+            msgsQueues = checkMsgsQueues(agents[0].MsgsQueues)
+            openListsCT_nodes = checkOpenLists(agents,M)
+        end = time.time()
+        total_msgs = counters.Counter_InitMsgs + counters.Counter_GoalMsgs + counters.Counter_NewNodeMsgs
+
+        # ###results##
+        print('Agent{} final solution cost:{}'.format(0, agents[0].incumbentSolutionCost))
+        agents[0].incumbentSolution.print_solutions()
+        print('Msgs-Counter:')
+        print('Counter_InitMsgs:{}\nCounter_GoalMsgs:{}\nCounter_NewNodeMsgs:{}'.format(counters.Counter_InitMsgs,counters.Counter_GoalMsgs,counters.Counter_NewNodeMsgs))
+        print('Total number of Msgs:{}'.format(total_msgs))
+        print('RoundRobin_Iterations:{}\nCounter expanded Nodes:{}'.format(counters.RoundRobin_Iterations,counters.Counter_expand_Nodes))
+        print('time taken: {}'.format(end - start))
+    # df=add_new_result_to_cvs('empty-8-8.map-1.scen','empty-8-8',M,agents[0].incumbentSolutionCost,end - start,counters.Counter_InitMsgs,counters.Counter_NewNodeMsgs,counters.Counter_GoalMsgs,total_msgs,counters.Counter_expand_Nodes,counters.RoundRobin_Iterations)
     # new_line(df)
 
 

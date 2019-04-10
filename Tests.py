@@ -69,63 +69,53 @@ def test2X2():
     return map2x2, map_cols, map_rows, numOfAgents, startpoints, goals
 
 
-def test4():
+def test4(numOfAgents):
     map_rows,map_cols, map_Berlin_1_256 = txtfile_to_2D_map('Berlin_1_256.map')
-    numOfAgents =1
     startpoints = [[254,112]]
     goals =       [[222,219]]
     return map_Berlin_1_256, map_cols, map_rows, numOfAgents, startpoints, goals
 
-def test_room32X32_4():
+def test_room32X32_4(numOfAgents):
     map_rows,map_cols, room32X32_4 = txtfile_to_2D_map('room-32-32-4.map')
-    numOfAgents =16
     startpoints,goals = scan_txtfile_to_start_goal_lists('room-32-32-4.map-1.scen')
     return room32X32_4, map_cols, map_rows, numOfAgents, startpoints, goals
 
-def test_room64X64_8():
+def test_room64X64_8(numOfAgents):
     map_rows,map_cols, room64X64 = txtfile_to_2D_map('room-64-64-8.map')
-    numOfAgents =4
     startpoints,goals = scan_txtfile_to_start_goal_lists('room-64-64-8.map-1.scen')
     return room64X64, map_cols, map_rows, numOfAgents, startpoints, goals
 
-def test_radom64X64_20():
+def test_radom64X64_20(numOfAgents):
     map_rows,map_cols, radom64X64 = txtfile_to_2D_map('random-64-64-20.map')
-    numOfAgents =5
     startpoints,goals = scan_txtfile_to_start_goal_lists('random-64-64-20.map-1.scen')
     return radom64X64, map_cols, map_rows, numOfAgents, startpoints, goals
-def test_radom32X32_20():
+def test_radom32X32_20(numOfAgents):
     map_rows,map_cols, radom32X32 = txtfile_to_2D_map('random-32-32-20.map')
-    numOfAgents =13
     startpoints,goals = scan_txtfile_to_start_goal_lists('random-32-32-20.map-1.scen')
     return radom32X32, map_cols, map_rows, numOfAgents, startpoints, goals
 
-def test_radom32X32_10():
+def test_radom32X32_10(numOfAgents):
     map_rows,map_cols, radom32X32 = txtfile_to_2D_map('Maps_files/random-32-32-10.map')
-    numOfAgents =1
     startpoints,goals = scan_txtfile_to_start_goal_lists('Tests_files/random-32-32-10.map-10.scen')
     return radom32X32, map_cols, map_rows, numOfAgents, startpoints, goals
 
-def test_maze32x32_2():
+def test_maze32x32_2(numOfAgents):
     map_rows,map_cols, map_maze32x32 = txtfile_to_2D_map('Maps_files/maze-32-32-2.map')
-    numOfAgents =5
     startpoints,goals = scan_txtfile_to_start_goal_lists('Tests_files/maze-32-32-2.map-1.scen')
     return map_maze32x32, map_cols, map_rows, numOfAgents, startpoints, goals
 
-def empty48x48():
+def empty48x48(numOfAgents):
     map_rows,map_cols, empty48x48 = txtfile_to_2D_map('Maps_files/empty-48-48.map')
-    numOfAgents =6
     startpoints,goals = scan_txtfile_to_start_goal_lists('Tests_files/empty-48-48.map-1.scen')
     return empty48x48, map_cols, map_rows, numOfAgents, startpoints, goals
 
-def empty8x8():
+def empty8x8(numOfAgents):
     map_rows,map_cols, empty8x8 = txtfile_to_2D_map('Maps_files/empty-8-8.map')
-    numOfAgents =3
     startpoints,goals = scan_txtfile_to_start_goal_lists('Tests_files/empty-8-8.map-1.scen')
     return empty8x8, map_cols, map_rows, numOfAgents, startpoints, goals
 
 
-def den312d():
+def den312d(numOfAgents):
     map_rows,map_cols, den312d = txtfile_to_2D_map('Maps_files/den312d.map')
-    numOfAgents =3
     startpoints,goals = scan_txtfile_to_start_goal_lists('Tests_files/den312d.map-1.scen')
     return den312d, map_cols, map_rows, numOfAgents, startpoints, goals
