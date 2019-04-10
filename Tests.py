@@ -107,7 +107,7 @@ def test_radom32X32_10():
 
 def test_maze32x32_2():
     map_rows,map_cols, map_maze32x32 = txtfile_to_2D_map('Maps_files/maze-32-32-2.map')
-    numOfAgents =13
+    numOfAgents =5
     startpoints,goals = scan_txtfile_to_start_goal_lists('Tests_files/maze-32-32-2.map-1.scen')
     return map_maze32x32, map_cols, map_rows, numOfAgents, startpoints, goals
 
