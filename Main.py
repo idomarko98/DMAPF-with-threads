@@ -24,7 +24,6 @@ Print_flag=0
 #list of Priority Queues msgs
 MsgsQueues=[]
 
-
 Counter_InitMsgs = 0
 Counter_GoalMsgs= 0
 Counter_NewNodeMsgs= 0
@@ -230,25 +229,42 @@ def handleNewCT_Node(new_Node,agent):
     if Print_flag == 1:
         print('agent{}: start handle New CT_Node from openList'.format(agent_id))
     newConflict=new_Node.find_conflicts()
+    global Counter_NewNodeMsgs
     if newConflict == None:
-        #Create new Goal Msg - broadcast message to all the agents
-        create_Send_goal_msgs(new_Node, agent_id)
-        if Print_flag == 1:
-            print('there is no conflict in new_Node - create Goal Msg and send to all the agents')
-    else:
+        newEdgeConflict = new_Node.find_Edges_conflicts()
+        if newEdgeConflict == None:
+            #Create new Goal Msg - broadcast message to all the agents
+            create_Send_goal_msgs(new_Node, agent_id)
+            if Print_flag == 1:
+                print('there is no conflict in new_Node - create Goal Msg and send to all the agents')
+        else: #new Edge conflict
+            if Print_flag == 1:
+                print('there is new Edge conflict:')
+                newEdgeConflict.print_Edge_conflict()
+            for i in range(M):
+                # Create NewCTNode_Msg
+                CT_Node_msg = NewCTNode_Msg(new_Node, newEdgeConflict, agent_id, i)
+                if i in newEdgeConflict.involved_Agents:
+                    if i == agent_id:
+                        handle_NewCTNode_Msg(CT_Node_msg, agent)
+                    else:
+                        msg_q = int_to_queue(i)
+                        Counter_NewNodeMsgs = Counter_NewNodeMsgs + 1
+                        msg_q.put((3, Counter_NewNodeMsgs, CT_Node_msg))
+    else: #new conflict
         if Print_flag == 1:
             print('there is new conflict:')
             newConflict.print_conflict()
         for i in range(M):
-            #Create NewCTNode_Msg
-            CT_Node_msg=NewCTNode_Msg(new_Node,newConflict,agent_id,i)
-            if i == agent_id:
-                handle_NewCTNode_Msg(CT_Node_msg, agent)
-            elif i in newConflict.involved_Agents:
-                msg_q = int_to_queue(i)
-                global Counter_NewNodeMsgs
-                Counter_NewNodeMsgs=Counter_NewNodeMsgs+1
-                msg_q.put((3,Counter_NewNodeMsgs,CT_Node_msg))
+            # Create NewCTNode_Msg
+            CT_Node_msg = NewCTNode_Msg(new_Node, newConflict, agent_id, i)
+            if i in newConflict.involved_Agents:
+                if i == agent_id:
+                    handle_NewCTNode_Msg(CT_Node_msg, agent)
+                else:
+                    msg_q = int_to_queue(i)
+                    Counter_NewNodeMsgs=Counter_NewNodeMsgs+1
+                    msg_q.put((3,Counter_NewNodeMsgs,CT_Node_msg))
 
 # Create goal Msg and send it to all the agents
 def create_Send_goal_msgs(new_Node, agent_id):
@@ -266,7 +282,7 @@ def create_Send_goal_msgs(new_Node, agent_id):
 
 #Set the problem data
 agents=[]
-test_map,map_cols, map_rows, M, startpoints, goals =test_radom32X32_10()
+test_map,map_cols, map_rows, M, startpoints, goals =test_maze32x32_2()
 start = time.time()
 for i in range(M):
     MsgsQueues.append(queue.PriorityQueue())
@@ -346,5 +362,5 @@ print('Total number of Msgs:{}'.format(total_msgs))
 print('RoundRobin_Iterations:{}\nCounter expanded Nodes:{}'.format(RoundRobin_Iterations,Counter_expand_Nodes))
 print('time taken: {}'.format(end - start))
 
-df=add_new_result_to_cvs('random-32-32-10.map-10.scen','random-32-32-10',M,agents[0].incumbentSolutionCost,end - start,Counter_InitMsgs,Counter_NewNodeMsgs,Counter_GoalMsgs,total_msgs,Counter_expand_Nodes,RoundRobin_Iterations)
+df=add_new_result_to_cvs('empty-8-8.map-1.scen','empty-8-8',M,agents[0].incumbentSolutionCost,end - start,Counter_InitMsgs,Counter_NewNodeMsgs,Counter_GoalMsgs,total_msgs,Counter_expand_Nodes,RoundRobin_Iterations)
 new_line(df)

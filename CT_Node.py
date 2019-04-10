@@ -11,6 +11,7 @@ Attributes:
 4.	Parent – pointer to parent CTNode
 Functions:
 1.	Init CT_Node (Solutions, Total_cost, Conflicts, Parent)
+
 2.	Find conflicts(CT_Node)
 '''
 class CT_Node:
@@ -49,6 +50,16 @@ class CT_Node:
         #print("no conflicts")
         return None
 
+    def find_Edges_conflicts(self):
+        for i in range(len(self.solutions)):
+            for j in range(len(self.solutions)):
+                if i != j:
+                    new_Edge_conflict = self.find_Edge_conflict_2path(self.solutions[i].path,self.solutions[j].path, self.solutions[i].agent_Id, self.solutions[j].agent_Id)
+                    if new_Edge_conflict != None:
+                        return new_Edge_conflict
+        #print("no conflicts")
+        return None
+
     def find_conflict_2path(self,path1,path2,agent1_id, agent2_id):
         minPathLen=min(len(path1),len(path2))
         maxPathLen=max(len(path1),len(path2))
@@ -79,6 +90,12 @@ class CT_Node:
             return True
         return False
 
+    def compare_Edges(self,v1_t1,v1_t2,v2_t1,v2_t2):
+        if v1_t1.i==v2_t2.i and v1_t1.j==v2_t2.j and v1_t2.i == v2_t1.i and v1_t2.j==v2_t1.j:
+            return True
+        return False
+
+
     def check_involved_agents(self,new_conflict, agent1_id,agent2_id ):
         state = (new_conflict.i, new_conflict.j, new_conflict.time)
         for i in range(len(self.solutions)):
@@ -87,5 +104,16 @@ class CT_Node:
                     new_conflict.involved_Agents.append(self.solutions[i].agent_Id)
         return new_conflict
 
+
+    def find_Edge_conflict_2path(self,path1,path2,agent1_id, agent2_id):
+        minPathLen = min(len(path1), len(path2))
+        for t in range(minPathLen-1):
+                compare_Edges = self.compare_Edges(path1[t],path1[t+1],path2[t],path2[t+1])
+                if compare_Edges == True:
+                    v1=Vertex(path1[t].i,path1[t].j)
+                    v2=Vertex(path1[t+1].i,path1[t+1].j)
+                    new_Edge_conflict=Conflict_Edges([agent1_id, agent2_id],v1,v2,t,t+1)
+                    return new_Edge_conflict
+        return None
 
 

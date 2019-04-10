@@ -1,7 +1,7 @@
 import queue
 import math
 import copy
-
+from Conflict import *
 Counter = 0
 
 class Spot:
@@ -33,13 +33,22 @@ class State():
         if self.i == i and self.j == j and self.time == time:
             return True
         return False
+    def check_swap_states(self,prevState,constrain):
+        if self.i==constrain.v1.i and self.j==constrain.v1.j and prevState.i==constrain.v2.i and prevState.i==constrain.v2.i:
+            if prevState.time == constrain.start_time and self.time==constrain.end_time:
+                return True
+        elif self.i==constrain.v2.i and self.j==constrain.v2.j and prevState.i==constrain.v1.i and prevState.i==constrain.v1.i:
+            if prevState.time == constrain.start_time and self.time==constrain.end_time:
+                return True
+        else:
+            return False
 
 def check_if_popedSpot_is_goal(state, goal_i, goal_j):
     if state.i == goal_i and state.j == goal_j:
         return True
     return False
 
-def Check_if_possible_extension(extand_state,dic_close_list,dic_open_list,constrains,map):
+def Check_if_possible_extension(extand_state,dic_close_list,dic_open_list,constrains,map,prev_state):
     #chack if extand_state is already in closeList
     key=(extand_state.i,extand_state.j,extand_state.time)
     if key in dic_close_list:
@@ -51,14 +60,18 @@ def Check_if_possible_extension(extand_state,dic_close_list,dic_open_list,constr
     if map[extand_state.i][extand_state.j]== 1:
         return False
     # chack if extand_state is constrain
-    stateInConstrains = checkIfstateInConstrains(extand_state,constrains)
+    stateInConstrains = checkIfstateInConstrains(extand_state,constrains,prev_state)
     if stateInConstrains:
         return False
     return True
 
-def checkIfstateInConstrains(extand_state,constrains):
+
+def checkIfstateInConstrains(extand_state,constrains,prevState):
     for i in range(len(constrains)):
-        stateIsConstrain= extand_state.compareStates(constrains[i].i,constrains[i].j,constrains[i].time)
+        if type(constrains[i]) == Conflict:
+            stateIsConstrain=extand_state.compareStates(constrains[i].i,constrains[i].j,constrains[i].time)
+        else:
+            stateIsConstrain= extand_state.check_swap_states(prevState,constrains[i])
         if stateIsConstrain:
             return True
     return False
@@ -112,7 +125,7 @@ def find_optimal_path(start_i,start_j,goal_i,goal_j,map,heuristicMap,constrains,
                 extand_list=create_extand_states(popedSpot.state,map_cols, map_rows)
                 extand_list.append(State(popedSpot.state.i,popedSpot.state.j,popedSpot.state.time+1))
                 for i in range(len(extand_list)):
-                    possible_extension=Check_if_possible_extension(extand_list[i],dic_close_list,dic_open_list,constrains,map)
+                    possible_extension=Check_if_possible_extension(extand_list[i],dic_close_list,dic_open_list,constrains,map,popedSpot.state)
                     if possible_extension:
                         h= heuristicMap[extand_list[i].i,extand_list[i].j]
                         g=popedSpot.g+1

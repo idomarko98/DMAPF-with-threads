@@ -79,7 +79,7 @@ def add_new_result_to_cvs(fname_test,fname_map,numberOfAgents,cost,time,init_msg
 
 #the function gets a new frame and append it to the resuls excel file.
 def new_line(df1):
-    writer = pd.ExcelWriter('Results1.xlsx')
+    writer = pd.ExcelWriter('Results9.xlsx')
     df1.to_excel(writer, 'Sheet1',index=False)
     writer.save()
 
