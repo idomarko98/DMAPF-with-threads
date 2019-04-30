@@ -58,6 +58,7 @@ def initialization_step_1(agent,counters,M):
         #Find optimal path for yourself
     path, cost = find_optimal_path(agent.startpoint[0],agent.startpoint[1],
     agent.goal[0],agent.goal[1],agent.map,agent.heuristicMap,[],agent.map_cols, agent.map_rows,Print_flag)
+    print("helo")
     if path != []:
         if Print_flag==1:
             print('cost: {} path:'.format(cost))
