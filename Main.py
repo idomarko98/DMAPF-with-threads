@@ -12,7 +12,7 @@ from Conform_map import *
 from Heuristic_Dijkstra import *
 from Tests import *
 import sys
-
+#with threads
 # 0 - doesn't print comments 1- print comments
 Print_flag=0
 
