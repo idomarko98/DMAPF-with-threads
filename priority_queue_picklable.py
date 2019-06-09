@@ -3,9 +3,6 @@ from multiprocessing import Queue
 
 class Picklable_Priorty_Queue:
 
-  def qsize(self):
-        return self.queue.qsize()
-
     def __init__(self):
         self.queue = Queue()
 
@@ -38,3 +35,9 @@ class Picklable_Priorty_Queue:
 
     def get(self):
         return self.queue.get()
+
+    def qsize(self):
+        return self.queue.qsize()
+
+    def empty(self):
+        return self.queue.empty()
