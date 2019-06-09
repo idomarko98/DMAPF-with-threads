@@ -3,7 +3,7 @@ from multiprocessing import Queue
 
 class Picklable_Priorty_Queue:
 
-    def qsize(self):
+  def qsize(self):
         return self.queue.qsize()
 
     def __init__(self):
@@ -33,6 +33,7 @@ class Picklable_Priorty_Queue:
 
         # move all items back to the original queue
         while not temp_queue.empty():
+
             self.queue.put(temp_queue.get())
 
     def get(self):
