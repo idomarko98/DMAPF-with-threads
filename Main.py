@@ -1,4 +1,4 @@
-import queue
+# import queue
 import time
 import math
 from Msgs import *
@@ -10,12 +10,48 @@ from Conflict import *
 from Low_Level import *
 from Conform_map import *
 from Heuristic_Dijkstra import *
+from Low_Level import *
+from Msgs import *
 from Tests import *
 import sys
-import concurrent.futures as fs
+import priority_queue_picklable
+import multiprocessing
 
+#with threads
 # 0 - doesn't print comments 1- print comments
-Print_flag = 0
+Print_flag=0
+
+
+# class MyManager(SyncManager):
+#     pass
+#
+#
+# MyManager.register("PriorityQueue", PriorityQueue)  # Register a shared PriorityQueue
+
+
+# def Manager():
+#     m = MyManager()
+#     m.start()
+#     return m
+
+#
+# def worker(queue):
+#     print(queue)
+#     for i in range(100):
+#         queue.put(i)
+#     print("worker")
+#     print(queue.qsize())
+
+
+# m = Manager()
+# pr_queue = m.PriorityQueue()  # This is process-safe
+# worker_process = Process(target=worker, args=(pr_queue,))
+# worker_process.start()
+#
+# time.sleep(5)  # nope, race condition, you shall not pass (probably)
+#
+# print("main")
+# print(pr_queue.qsize())
 
 
 class Counters:
@@ -37,7 +73,7 @@ class Agent:
         self.goal = goal
         self.map = map
         self.constrains = constrains
-        self.openList = queue.PriorityQueue()
+        self.openList = priority_queue_picklable.Picklable_Priorty_Queue()
         self.incumbentSolutionCost = incumbentSolutionCost
         self.incumbentSolution = incumbentSolution
         self.map_cols = map_cols
@@ -45,13 +81,14 @@ class Agent:
         self.heuristicMap = create_Heuristic_map(map_rows, map_cols, map, (goal[0], goal[1]))
         self.MsgsQueues = MsgsQueues
 
+    # def __reduce__(self):
+    #     return (self.__class__, (self.agent_id, self.startpoint, self.goal, self.map, self.constrains, self.incumbentSolutionCost, self.incumbentSolution, self.map_cols, self.map_rows, self.MsgsQueues))
     # print Agent attributs for check
     def print_agent_attributs(self):
         print('agent id: {} start point:{} goal point:{} map:{} constrains:{} openList:{} incumbentSolutionCost:{} '
               'incumbentSolution:{}'
               .format(self.agent_id, self.startpoint, self.goal, self.map, self.constrains, self.openList,
                       self.incumbentSolutionCost, self.incumbentSolution))
-
 
 '''
 Initialization Step 1:
@@ -285,17 +322,33 @@ def create_Send_goal_msgs(new_Node, agent_id, M, counters, agent):
         print('agent{}: done handle New CT_Node'.format(agent_id))
 
 
-def initialization_step_1_M_agents(agents, M, counters):
+def initialization_step_1_M_agents(agents, m, counters=[]):
     '''
     Initialization Step 1:
     Find optimal path for yourself and send Init Msgs to all the agents
     '''
-    with fs.ThreadPoolExecutor(max_workers=M) as executor:
-        for i in range(M):
-            executor.submit(init_step1, agents[i], counters, M)
+    # for i in range(m):
+    #     check_path=initialization_step_1(agents[i],counters,m)
+    #     if check_path==-1:
+    #         print('exit')
+    #         sys.exit("there is no solution")
+    #
+    # with fs.ThreadPoolExecutor(max_workers=m) as executor:
+    #     for i in range(m):
+    #         executor.submit(init_step1, agents[i],  m)
+    # executor.shutdown(wait=True)
+    #
+    pool = []
+    for i in range(m):
+        p = multiprocessing.Process(target=init_step1, args=(agents, m,))
+        pool.append(p)
+        p.start()
+    for process in pool:
+        process.join()
 
 
-def init_step1(agent, counters, M):
+def init_step1(agent, m):
+    # agent = agents[i]
     if Print_flag == 1:
         print('\nagent{}: start Initialization step 1'.format(agent.agent_id))
         # -----------------   Initialization Step 1 ------------------
@@ -309,12 +362,12 @@ def init_step1(agent, counters, M):
             print('cost: {} path:'.format(cost))
             print_path(path)
         # Create Init Msg and send it to all the agents
-        create_Send_init_msgs(path, cost, agent.agent_id, M, counters, agent)
+        create_Send_init_msgs(path, cost, agent.agent_id, m, Counters(), agent)
         if Print_flag == 1:
             print('agent{}: finished Initialization step 1'.format(agent.agent_id))
     else:
         print('exit')
-        sys.exit("there is no solution")
+        # sys.exit("there is no solution")
 
 
 '''
@@ -338,6 +391,12 @@ def Create_CT_Roots_for_M_agents(agents, M, counters):
         (agents[i].openList).put((CT_Root.totalCost, counters.openListCounter, CT_Root))
 
 
+def New_Agent(i, strtPoint, goal, map, constrains, incumbentSolutionCost, incumbentSolution, map_cols, map_rows, msgs_queues):
+    a = Agent(i, strtPoint, goal, map, constrains, incumbentSolutionCost, incumbentSolution, map_cols, map_rows, msgs_queues)
+    # a.start()
+    return a
+
+
 def Main_program():
     numOfAgents = 6
     for CnumOfAgents in range(numOfAgents):
@@ -348,12 +407,12 @@ def Main_program():
         test_map, map_cols, map_rows, M, startpoints, goals = map1_22X28(CnumOfAgents + 1)
         start = time.time()
         # list of Priority Queues msgs
-        MsgsQueues = []
+        msgs_queues = []
         for i in range(M):
-            MsgsQueues.append(queue.PriorityQueue())
+            msgs_queues.append(priority_queue_picklable.Picklable_Priorty_Queue())
         # initiate M agents
         for i in range(M):
-            new_agent = Agent(i, startpoints[i], goals[i], test_map, [], math.inf, [], map_cols, map_rows, MsgsQueues)
+            new_agent = New_Agent(i, startpoints[i], goals[i], test_map, [], math.inf, [], map_cols, map_rows, msgs_queues)
             agents.append(new_agent)
             if Print_flag == 1:
                 agents[i].print_agent_attributs()
