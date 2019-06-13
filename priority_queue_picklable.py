@@ -1,7 +1,10 @@
-from multiprocessing import Queue, JoinableQueue, SimpleQueue
+from multiprocessing import Queue
 
 
 class Picklable_Priorty_Queue:
+
+    def qsize(self):
+        return self.queue.qsize()
 
     def __init__(self):
         self.queue = Queue()
@@ -32,20 +35,5 @@ class Picklable_Priorty_Queue:
         while not temp_queue.empty():
             self.queue.put(temp_queue.get())
 
-        # temp_queue.close()
-        # temp_queue.task_done()
-        # temp_queue.join_thread()
-        # self.queue.close()
-        # self.queue.join_thread()
-
     def get(self):
-        print("get")
         return self.queue.get()
-
-    def qsize(self):
-        print("size")
-        return self.queue.qsize()
-
-    def empty(self):
-        print("empty")
-        return self.queue.empty()
