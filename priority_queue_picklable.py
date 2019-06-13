@@ -2,7 +2,7 @@ from multiprocessing import Queue
 
 
 class Picklable_Priorty_Queue:
-
+  
     def __init__(self):
         self.queue = Queue()
 
@@ -12,7 +12,7 @@ class Picklable_Priorty_Queue:
         # while loop to get the new item in the temp queue
         while not self.queue.empty():
             temp_state = self.queue.get()
-            if state > temp_state:  # Not sure what should be here
+            if state[0] < temp_state[0]:  # Not sure what should be here
                 temp_queue.put(state)
                 temp_queue.put(temp_state)
                 inserted = True
@@ -30,7 +30,6 @@ class Picklable_Priorty_Queue:
 
         # move all items back to the original queue
         while not temp_queue.empty():
-
             self.queue.put(temp_queue.get())
 
     def get(self):
