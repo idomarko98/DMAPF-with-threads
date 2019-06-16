@@ -2,7 +2,7 @@ from multiprocessing import Queue
 
 
 class Picklable_Priorty_Queue:
-  
+
     def __init__(self):
         self.queue = Queue()
 

@@ -1,11 +1,14 @@
 # import queue
+import concurrent.futures as fs
 import multiprocessing
+import sys
 import time
 
 from CT_Node import *
 from Heuristic_Dijkstra import *
 from Low_Level import *
 from Msgs import *
+from PQPtry2 import PQPtry2
 from Tests import *
 
 # with threads
@@ -64,7 +67,7 @@ class Agent:
         self.goal = goal
         self.map = map
         self.constrains = constrains
-        self.openList = priority_queue_picklable.Picklable_Priorty_Queue()
+        self.openList = PQPtry2()
         self.incumbentSolutionCost = incumbentSolutionCost
         self.incumbentSolution = incumbentSolution
         self.map_cols = map_cols
@@ -93,9 +96,16 @@ def initialization_step_1(agent, counters, M):
         print('\nagent{}: start Initialization step 1'.format(agent.agent_id))
         # -----------------   Initialization Step 1 ------------------
         # Find optimal path for yourself
-    path, cost = find_optimal_path(agent.startpoint[0], agent.startpoint[1],
-                                   agent.goal[0], agent.goal[1], agent.map, agent.heuristicMap, [], agent.map_cols,
-                                   agent.map_rows, Print_flag)
+    path, cost = find_optimal_path(agent.startpoint[0],
+                                   agent.startpoint[1],
+                                   agent.goal[0],
+                                   agent.goal[1],
+                                   agent.map,
+                                   agent.heuristicMap,
+                                   [],
+                                   agent.map_cols,
+                                   agent.map_rows,
+                                   Print_flag)
     # agent.map_rows)
 
     if path != []:
@@ -162,7 +172,7 @@ def create_Send_init_msgs(path, cost, agent_id, M, counters, agent):
         if Print_flag == 1:
             new_init_Msg.print_Msg()
         counters.Counter_InitMsgs = counters.Counter_InitMsgs + 1
-        print("put3")
+        # print("put3")
         agent.MsgsQueues[i].put((1, counters.Counter_InitMsgs, new_init_Msg))
         if Print_flag == 1:
             print('succsed to put')
@@ -252,7 +262,7 @@ def handle_NewCTNode_Msg(newCTNode_msg, agent, M, counters):
             # Create CTNodeChild
             CTNodeChild = CT_Node(new_Solution, new_Total_cost, constrains, newCTNode_msg.CTNode)
             counters.openListCounter = counters.openListCounter + 1
-            print("put4")
+            # print("put4")
             agent.openList.put((new_Total_cost, counters.openListCounter, CTNodeChild))
             counters.Counter_expand_Nodes = counters.Counter_expand_Nodes + 1
             if Print_flag == 1:
@@ -289,7 +299,7 @@ def handleNewCT_Node(new_Node, agent, M, counters):
                         handle_NewCTNode_Msg(CT_Node_msg, agent, M, counters)
                     else:
                         counters.Counter_NewNodeMsgs = counters.Counter_NewNodeMsgs + 1
-                        print("put5")
+                        # print("put5")
                         agent.MsgsQueues[i].put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
     else:  # new conflict
         if Print_flag == 1:
@@ -304,7 +314,7 @@ def handleNewCT_Node(new_Node, agent, M, counters):
                 else:
                     msg_q = agent.MsgsQueues[i]
                     counters.Counter_NewNodeMsgs = counters.Counter_NewNodeMsgs + 1
-                    print("put6")
+                    # print("put6")
                     msg_q.put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
 
 
@@ -313,7 +323,7 @@ def create_Send_goal_msgs(new_Node, agent_id, M, counters, agent):
     for i in range(M):
         new_goal_Msg = Goal_Msg(new_Node, new_Node.totalCost, agent_id, i)
         counters.Counter_GoalMsgs = counters.Counter_GoalMsgs + 1
-        print("put7")
+        # print("put7")
         agent.MsgsQueues[i].put((1, counters.Counter_GoalMsgs, new_goal_Msg))
         if Print_flag == 1:
             print('succsed to put')
@@ -326,24 +336,25 @@ def initialization_step_1_M_agents(agents, m, counters=[]):
     Initialization Step 1:
     Find optimal path for yourself and send Init Msgs to all the agents
     '''
-    # for i in range(m):
-    #     check_path=initialization_step_1(agents[i],counters,m)
-    #     if check_path==-1:
-    #         print('exit')
-    #         sys.exit("there is no solution")
-    #
+    for i in range(m):
+        check_path = initialization_step_1(agents[i], counters, m)
+        if check_path == -1:
+            print('exit')
+            sys.exit("there is no solution")
+
     # with fs.ThreadPoolExecutor(max_workers=m) as executor:
     #     for i in range(m):
-    #         executor.submit(init_step1, agents[i],  m)
+    #         executor.submit(init_step1, agents[i], m)
     # executor.shutdown(wait=True)
-    #
-    pool = []
-    for i in range(m):
-        p = multiprocessing.Process(target=init_step1, args=(agents[i], m,))
-        pool.append(p)
-        p.start()
-    for process in pool:
-        process.join()
+
+
+    # pool = []
+    # for i in range(m):
+    #     p = multiprocessing.Process(target=init_step1, args=(agents[i], m,))
+    #     pool.append(p)
+    #     p.start()
+    # for process in pool:
+    #     process.join()
 
 
 def init_step1(agent, m):
@@ -352,10 +363,9 @@ def init_step1(agent, m):
         print('\nagent{}: start Initialization step 1'.format(agent.agent_id))
         # -----------------   Initialization Step 1 ------------------
         # Find optimal path for yourself
-    path, cost = find_optimal_path(agent.startpoint[0], agent.startpoint[1],
-                                   agent.goal[0], agent.goal[1], agent.map, agent.heuristicMap, [], agent.map_cols,
-                                   # agent.map_rows)
-                                   agent.map_rows, Print_flag)
+    path, cost = find_optimal_path(agent.startpoint[0], agent.startpoint[1], agent.goal[0], agent.goal[1], agent.map,
+                                   agent.heuristicMap, [], agent.map_cols, agent.map_rows, Print_flag)
+    # agent.map_rows)
 
     if path != []:
         if Print_flag == 1:
@@ -388,7 +398,7 @@ def Create_CT_Roots_for_M_agents(agents, M, counters):
             print('\nPrint CT_root for agent{}'.format(i))
             CT_Root.print_CT_Node()
         counters.openListCounter = counters.openListCounter + 1
-        print("put8")
+        # print("put8")
         agents[i].openList.put((CT_Root.totalCost, counters.openListCounter, CT_Root))
 
 
@@ -412,11 +422,11 @@ def Main_program():
         # list of Priority Queues msgs
         msgs_queues = []
         for i in range(M):
-            msgs_queues.append(priority_queue_picklable.Picklable_Priorty_Queue())
+            msgs_queues.append(PQPtry2())
         # initiate M agents
         for i in range(M):
             new_agent = Agent(i, startpoints[i], goals[i], test_map, [], math.inf, [], map_cols, map_rows,
-                                  msgs_queues)
+                              msgs_queues)
 
             agents.append(new_agent)
             if Print_flag == 1:
