@@ -1,15 +1,20 @@
 # import queue
 import math
-import priority_queue_picklable
 
+import priority_queue_picklable
 from Conflict import *
+from PQPtry2 import PQPtry2
 
 Counter = 0
 
 
 class Spot:
     def __init__(self, state, f, g, h, path):
-        self.state = copy.deepcopy(state)
+        try:
+            self.state = copy.deepcopy(state)
+        except:
+            pass
+
         self.f = f
         self.g = g
         self.h = h
@@ -105,8 +110,9 @@ def check_goal_start_not_wall(start_i, start_j, goal_i, goal_j, map):
     return True
 
 
-def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, constrains, map_cols, map_rows, Print_flag):
-# def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, constrains, map_cols, map_rows):
+def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, constrains, map_cols, map_rows,
+                      Print_flag=0):
+    # def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, constrains, map_cols, map_rows):
     if check_goal_start_not_wall(start_i, start_j, goal_i, goal_j, map):
         h_start = heuristicMap[start_i, start_j]
         g_start = 0
@@ -114,10 +120,10 @@ def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, const
         time = 0
         start_spot = Spot(State(start_i, start_j, time), f_start, g_start, h_start, [])
         dic_open_list = {}  # dictionary <Key: state(i,j,t)> Val:<Spot object>
-        openList = priority_queue_picklable.Picklable_Priorty_Queue()
+        openList = PQPtry2()
         global Counter
         Counter = Counter + 1
-        print("put1")
+        # print("put1")
         openList.put((f_start, Counter, start_spot))
         dic_open_list[(start_spot.state.i, start_spot.state.j, start_spot.state.time)] = start_spot.f
         dic_close_list = {}  # dictionary <Key: state(i,j,t)> Val:<Spot object>
@@ -148,7 +154,7 @@ def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, const
                         path.append(popedSpot.state)
                         new__extensions_Spot = Spot(extand_list[i], f, g, h, path)
                         Counter = Counter + 1
-                        print("put2")
+                        # print("put2")
                         openList.put((f, Counter, new__extensions_Spot))
                         dic_open_list[(new__extensions_Spot.state.i, new__extensions_Spot.state.j,
                                        new__extensions_Spot.state.time)] = f
