@@ -1,13 +1,13 @@
-from multiprocessing.queues import Queue, SimpleQueue, JoinableQueue
+from multiprocessing import Queue
 
 
 class Picklable_Priorty_Queue:
 
     def __init__(self):
-        self.queue = JoinableQueue()
+        self.queue = Queue()
 
     def put(self, state):
-        temp_queue = JoinableQueue()
+        temp_queue = Queue()
         inserted = False
         # while loop to get the new item in the temp queue
         while not self.queue.empty():
