@@ -106,7 +106,7 @@ def ThreeAgents(numOfAgents):
 def map1_22X28(numOfAgents):
     map_rows, map_cols, map1 = txtfile_to_2D_map('Maps_files/map1_22X28.map')
     startpoints, goals = scan_txtfile_to_start_goal_lists('Tests_files/map1_22X28.map-1.scen')
-    return map1, map_cols, map_rows, numOfAgents, startpoints, goals
+    return map1, map_cols, map_rows, startpoints, goals
 
 
 def test4(numOfAgents):
