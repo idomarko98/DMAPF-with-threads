@@ -14,7 +14,7 @@ from Tests import *
 # 0 - doesn't print comments 1- print comments
 Print_flag = 0
 
-M = 7
+M = 6
 MsgsQueues = []
 
 
@@ -180,35 +180,43 @@ def checkOpenLists(agents):
     return False
 
 
+def handle_agent(agent):
+    if Print_flag == 1:
+        total_msgs = counters.Counter_InitMsgs + counters.Counter_GoalMsgs + counters.Counter_NewNodeMsgs
+        print('total messages:  {}  '.format(total_msgs))
+        print('the turn of agent{} is START'.format(agent.agent_id))
+    # Handle Incoming Messages
+    # q = agent.MsgsQueues[agent.agent_id]
+    q = MsgsQueues[agent.agent_id]
+    if not q.empty():
+        new_msg = q.get()
+        handleNewMsg(new_msg[2], agent)
+
+    # Handle a new CTNode from OpenList
+    if not agent.openList.empty():
+        new_node = agent.openList.get()
+        # openList is Priority Queue - it pops the lowest cost every time
+        if new_node[0] < agent.incumbentSolutionCost:
+            handleNewCT_Node(new_node[2], agent)
+        else:
+            if Print_flag == 1:
+                print('all the Nodes in the open list are more expensive than incumbentSolutionCost - '
+                      'pop them all')
+            while not agent.openList.empty():
+                agent.openList.get()
+    if Print_flag == 1:
+        print('the turn of agent{} is OVER'.format(agent.agent_id))
+    return agent.incumbentSolutionCost
+
+
 # shawn 4
 def handle(agents):
     counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
-    for i in range(M):
-        if Print_flag == 1:
-            total_msgs = counters.Counter_InitMsgs + counters.Counter_GoalMsgs + counters.Counter_NewNodeMsgs
-            print('total messages:  {}  '.format(total_msgs))
-            print('the turn of agent{} is START'.format(agents[i].agent_id))
-        # Handle Incoming Messages
-        # q = agents[i].MsgsQueues[agents[i].agent_id]
-        q = MsgsQueues[agents[i].agent_id]
-        if not q.empty():
-            new_msg = q.get()
-            handleNewMsg(new_msg[2], agents[i])
-
-        # Handle a new CTNode from OpenList
-        if not agents[i].openList.empty():
-            new_node = agents[i].openList.get()
-            # openList is Priority Queue - it pops the lowest cost every time
-            if new_node[0] < agents[i].incumbentSolutionCost:
-                handleNewCT_Node(new_node[2], agents[i])
-            else:
-                if Print_flag == 1:
-                    print('all the Nodes in the open list are more expensive than incumbentSolutionCost - '
-                          'pop them all')
-                while not agents[i].openList.empty():
-                    agents[i].openList.get()
-        if Print_flag == 1:
-            print('the turn of agent{} is OVER'.format(agents[i].agent_id))
+    with fs.ThreadPoolExecutor() as executor:
+        for i in range(M):
+            fu = executor.submit(handle_agent, agents[i])
+        # if not fu.result() is None:
+    executor.shutdown(wait=True)
     msgs_queues = checkMsgsQueues()
     open_lists_ct_nodes = checkOpenLists(agents)
     return msgs_queues, open_lists_ct_nodes
@@ -459,15 +467,11 @@ def Main_program():
     open_lists_ct_nodes = checkOpenLists(agents)
     # todo: distribute
     # shawn 3
-    with fs.ThreadPoolExecutor() as executor:
-        while msgs_queues or open_lists_ct_nodes:
+    while msgs_queues or open_lists_ct_nodes:
             '''Handle a new CTNode from OpenSet
             Handle Incoming Messages'''
-            fu = executor.submit(handle, agents)
-            # if not fu.result() is None:
-            msgs_queues = fu.result()[0]
-            open_lists_ct_nodes = fu.result()[1]
-        executor.shutdown(wait=True)
+            msgs_queues, open_lists_ct_nodes = handle(agents)
+
     # counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
     # for i in range(M):
     #     if Print_flag == 1:
