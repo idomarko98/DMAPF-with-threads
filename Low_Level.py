@@ -1,4 +1,6 @@
 # import queue
+import queue
+
 import math
 
 import priority_queue_picklable
@@ -12,6 +14,7 @@ class Spot:
     def __init__(self, state, f, g, h, path):
         try:
             self.state = copy.deepcopy(state)
+
         except:
             pass
 
@@ -120,14 +123,14 @@ def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, const
         time = 0
         start_spot = Spot(State(start_i, start_j, time), f_start, g_start, h_start, [])
         dic_open_list = {}  # dictionary <Key: state(i,j,t)> Val:<Spot object>
-        openList = PQPtry2()
+        openList = queue.PriorityQueue()
         global Counter
         Counter = Counter + 1
         # print("put1")
         openList.put((f_start, Counter, start_spot))
         dic_open_list[(start_spot.state.i, start_spot.state.j, start_spot.state.time)] = start_spot.f
         dic_close_list = {}  # dictionary <Key: state(i,j,t)> Val:<Spot object>
-        while openList.empty() == False:
+        while not openList.empty():
             popedSpot = openList.get()[2]
             isgoal = check_if_popedSpot_is_goal(popedSpot.state, goal_i, goal_j)
             if isgoal:
@@ -159,8 +162,6 @@ def find_optimal_path(start_i, start_j, goal_i, goal_j, map, heuristicMap, const
                         dic_open_list[(new__extensions_Spot.state.i, new__extensions_Spot.state.j,
                                        new__extensions_Spot.state.time)] = f
                 dic_close_list[(popedSpot.state.i, popedSpot.state.j, popedSpot.state.time)] = popedSpot
-
-
 
     else:
         print('there is no path - the start or goal position is a wall')

@@ -90,8 +90,11 @@ def new_line(df):
     #     writer = csv.writer(writer)
     #     writer.writerow(df1)
     folder_path = 'C:/Users/User/PycharmProjects/DMAPF with threads'
-    # mdf = pd.DataFrame(np.array(df1), columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs', 'total_msgs', 'expanded_nodes', 'roundRobinIteration'])
-    # df1.to_csv(os.path.join(folder_path, 'results{:d}.csv'.format(df1.at[0,'Number of Agents'])), columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs', 'total_msgs', 'expanded_nodes', 'roundRobinIteration'], index=False, mode='a')
+    # mdf = pd.DataFrame(np.array(df1), columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs',
+    # 'CT_Node_msgs', 'Goal Msgs', 'total_msgs', 'expanded_nodes', 'roundRobinIteration'])
+    # df1.to_csv(os.path.join(folder_path, 'results{:d}.csv'.format(df1.at[0,'Number of Agents'])),
+    # columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs', 'total_msgs'
+    # , 'expanded_nodes', 'roundRobinIteration'], index=False, mode='a')
     df.to_csv(os.path.join(folder_path, 'results{:d}.csv'.format(df.at[0, 'Number of Agents'])),
               columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs',
                        'total_msgs', 'expanded_nodes', 'roundRobinIteration'], header=False, index=False, mode='a')
