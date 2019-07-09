@@ -14,7 +14,7 @@ from Tests import *
 # 0 - doesn't print comments 1- print comments
 Print_flag = 0
 
-M = 6
+M = 4
 MsgsQueues = []
 
 
@@ -431,9 +431,35 @@ def Create_CT_Roots_for_M_agents(agents):
 #     # a.start()
 #     return a
 
+def handle_agent_i(agent):
+    check_path = initialization_step_1(agent)
+    if check_path == -1:
+        print('exit')
+        sys.exit("there is no solution")
+    initialization_step_2(agent.agent_id, [])
+    CT_Root = Create_CT_Root_for_agent_id(agent.agent_id, agent)
+    if Print_flag == 1:
+        print('\nPrint CT_root for agent{}'.format(agent.agent_id))
+        CT_Root.print_CT_Node()
+    counters.openListCounter = counters.openListCounter + 1
+    # print("put8")
+    agent.openList.put((CT_Root.totalCost, counters.openListCounter, CT_Root))
+    # Main Process(Agent Ai)
+    msgs_queues = checkMsgsQueues()
+    open_lists_ct_nodes = not agent.openList.empty()
+    # todo: distribute
+    # shawn 3
+    while msgs_queues or open_lists_ct_nodes:
+        '''Handle a new CTNode from OpenSet
+        Handle Incoming Messages'''
+        counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
+        handle_agent(agent)
+        msgs_queues = checkMsgsQueues()
+        open_lists_ct_nodes = not agent.openList.empty()
+
 
 def Main_program():
-    numOfAgents = M-1
+    numOfAgents = M - 1
     runs = 0
     # while runs < 50:
 
@@ -458,19 +484,22 @@ def Main_program():
         agents.append(new_agent)
         if Print_flag == 1:
             agents[i].print_agent_attributs()
-    initialization_step_1_M_agents(agents)
-    initialization_step_2_M_agents(agents)
-    Create_CT_Roots_for_M_agents(agents)
-
-    # Main Process(Agent Ai)
-    msgs_queues = checkMsgsQueues()
-    open_lists_ct_nodes = checkOpenLists(agents)
-    # todo: distribute
-    # shawn 3
-    while msgs_queues or open_lists_ct_nodes:
-            '''Handle a new CTNode from OpenSet
-            Handle Incoming Messages'''
-            msgs_queues, open_lists_ct_nodes = handle(agents)
+    for i in range(M):
+        agent = agents[i]
+        handle_agent_i(agent)
+    # initialization_step_1_M_agents(agents)
+    # initialization_step_2_M_agents(agents)
+    # Create_CT_Roots_for_M_agents(agents)
+    #
+    # # Main Process(Agent Ai)
+    # msgs_queues = checkMsgsQueues()
+    # open_lists_ct_nodes = checkOpenLists(agents)
+    # # todo: distribute
+    # # shawn 3
+    # while msgs_queues or open_lists_ct_nodes:
+    #         '''Handle a new CTNode from OpenSet
+    #         Handle Incoming Messages'''
+    #         msgs_queues, open_lists_ct_nodes = handle(agents)
 
     # counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
     # for i in range(M):
@@ -515,7 +544,7 @@ def Main_program():
     print('RoundRobin_Iterations:{}\nCounter expanded Nodes:{}'.format(counters.RoundRobin_Iterations,
                                                                        counters.Counter_expand_Nodes))
     print('time taken: {}'.format(end - start))
-    # df = add_new_result_to_cvs('map1_22X28.map-1.scen', 'map1_22X28.map', M, agents[0].incumbentSolutionCost,
+    # df = add_new_result_to_cvs('map1_22X28.map-1.scen', 'map1_22X28.map', CnumOfAgents, agents[0].incumbentSolutionCost,
     #                            end - start,
     #                            counters.Counter_InitMsgs, counters.Counter_NewNodeMsgs,
     #                            counters.Counter_GoalMsgs,
