@@ -95,7 +95,7 @@ def new_line(df):
     # df1.to_csv(os.path.join(folder_path, 'results{:d}.csv'.format(df1.at[0,'Number of Agents'])),
     # columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs', 'total_msgs'
     # , 'expanded_nodes', 'roundRobinIteration'], index=False, mode='a')
-    df.to_csv(os.path.join(folder_path, 'results{:d}.csv'.format(df.at[0, 'Number of Agents'])),
+    df.to_csv(os.path.join(folder_path, 'results{:d} distributed.csv'.format(df.at[0, 'Number of Agents'])),
               columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs',
                        'total_msgs', 'expanded_nodes', 'roundRobinIteration'], header=False, index=False, mode='a')
     df.to_csv()
@@ -103,3 +103,12 @@ def new_line(df):
     # writer = pd.ExcelWriter('Results9.xlsx', mode='a')
     # df1.to_excel(writer, 'Sheet1', index=False)
     # writer.save()
+
+
+def first_new_line(df):
+    folder_path = 'C:/Users/User/PycharmProjects/DMAPF with threads'
+    df.to_csv(os.path.join(folder_path, 'maze results{:d} distributed.csv'.format(df.at[0, 'Number of Agents'])),
+              columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs',
+                       'total_msgs', 'expanded_nodes', 'roundRobinIteration'], header=True, index=False, mode='w')
+    df.to_csv()
+    return df
