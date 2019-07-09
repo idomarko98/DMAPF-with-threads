@@ -21,6 +21,7 @@ for i in range(1, 7):
         plt.axis([0, 50, 0, 0.4])
     plt.title('Number of agents: {}'.format(i))
     plt.legend()
+    plt.grid()
     plt.savefig('results{}'.format(i), transparent=True)
     plt.show()
 
