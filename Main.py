@@ -322,7 +322,7 @@ def handleNewCT_Node(new_Node, agent, m):
                         counters.Counter_NewNodeMsgs = counters.Counter_NewNodeMsgs + 1
                         # print("put5")
                         MsgsQueues[i].put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
-                        #shawn 5
+                        # shawn 5
     else:  # new conflict
         if Print_flag == 1:
             print('there is new conflict:')
@@ -336,7 +336,7 @@ def handleNewCT_Node(new_Node, agent, m):
                 else:
                     counters.Counter_NewNodeMsgs = counters.Counter_NewNodeMsgs + 1
                     MsgsQueues[i].put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
-                    #shawn 6
+                    # shawn 6
 
 
 # Create goal Msg and send it to all the agents
@@ -345,7 +345,7 @@ def create_Send_goal_msgs(new_Node, agent_id, agent, m):
         new_goal_Msg = Goal_Msg(new_Node, new_Node.totalCost, agent_id, i)
         counters.Counter_GoalMsgs = counters.Counter_GoalMsgs + 1
         MsgsQueues[i].put((1, counters.Counter_GoalMsgs, new_goal_Msg))
-        #shawn 7
+        # shawn 7
         if Print_flag == 1:
             print('succeeded to put')
     if Print_flag == 1:
@@ -472,9 +472,6 @@ def Main_program(m, number_of_iterations):
 
         ###results##
         print('\nAgent{} final solution cost:{}'.format(0, solCost))
-        if agents[0] is not None:
-            if agents[0].incumbentSolution is not None:
-                agents[0].incumbentSolution.print_solutions()
         print('Msgs-Counter:')
         print('Counter_InitMsgs:{}\nCounter_GoalMsgs:{}\nCounter_NewNodeMsgs:{}'.format(counters.Counter_InitMsgs,
                                                                                         counters.Counter_GoalMsgs,
@@ -495,6 +492,6 @@ def Main_program(m, number_of_iterations):
 
 if __name__ == "__main__":
     # execute only if run as a script
-    for number_of_agents in range(3, 6):
-        # for i in range(M):
-        Main_program(number_of_agents + 1, 50)
+    # for number_of_agents in range(3, 6):
+    for number_of_agents in range(M):
+        Main_program(number_of_agents + 1, 1)
