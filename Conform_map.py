@@ -84,25 +84,14 @@ def add_new_result_to_cvs(fname_test, fname_map, numberOfAgents, cost, time, ini
     return df2
 
 
-# the function gets a new frame and append it to the resuls excel file.
+# the function gets a new frame and append it to the results excel file.
 def new_line(df):
-    # with open('Results9.xlsx', 'a') as writer:
-    #     writer = csv.writer(writer)
-    #     writer.writerow(df1)
     folder_path = 'C:/Users/User/PycharmProjects/DMAPF with threads'
-    # mdf = pd.DataFrame(np.array(df1), columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs',
-    # 'CT_Node_msgs', 'Goal Msgs', 'total_msgs', 'expanded_nodes', 'roundRobinIteration'])
-    # df1.to_csv(os.path.join(folder_path, 'results{:d}.csv'.format(df1.at[0,'Number of Agents'])),
-    # columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs', 'total_msgs'
-    # , 'expanded_nodes', 'roundRobinIteration'], index=False, mode='a')
     df.to_csv(os.path.join(folder_path, 'results{:d} distributed.csv'.format(df.at[0, 'Number of Agents'])),
               columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs',
                        'total_msgs', 'expanded_nodes', 'roundRobinIteration'], header=False, index=False, mode='a')
     df.to_csv()
     return df
-    # writer = pd.ExcelWriter('Results9.xlsx', mode='a')
-    # df1.to_excel(writer, 'Sheet1', index=False)
-    # writer.save()
 
 
 def first_new_line(df):
