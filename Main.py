@@ -17,6 +17,17 @@ Print_flag = 0
 M = 6
 MsgsQueues = []
 
+scenArr = ['Tests_files/den312d.map-1.scen', 'Tests_files/empty-8-8.map-1.scen',
+           'Tests_files/empty-48-48.map-1.scen', 'Tests_files/ht_chantry.map-1.scen',
+           'Tests_files/maze-32-32-2.map-1.scen', 'Tests_files/random-32-32-10.map-10.scen',
+           'Tests_files/random-32-32-20.map-1.scen', 'Tests_files/random-64-64-20.map-1.scen',
+           'Tests_files/room-32-32-4.map-1.scen', 'Tests_files/room-64-64-8.map-1.scen']
+mapArr = ['Maps_files/den312d.map', 'Maps_files/empty-8-8.map', 'Maps_files/empty-48-48.map',
+          'Maps_files/ht_chantry.map', 'Maps_files/maze-32-32-2.map', 'Maps_files/random-32-32-10.map',
+          'Maps_files/random-32-32-20.map', 'Maps_files/random-64-64-20.map', 'Maps_files/room-32-32-4.map',
+          'Maps_files/room-64-64-8.map']
+scen = 'Tests_files/map1_22X28.map-1.scen'
+mapa = 'Maps_files/map1_22X28.map'
 
 class Counters:
     def __init__(self):
@@ -65,67 +76,11 @@ class Agent:
                       self.incumbentSolutionCost, self.incumbentSolution))
 
 
-'''
-Initialization Step 1:
-Find optimal path for yourself and send Init Msgs to all the agents
-'''
-
-
-def initialization_step_1(agent):
-    if Print_flag == 1:
-        print('\nagent{}: start Initialization step 1'.format(agent.agent_id))
-        # -----------------   Initialization Step 1 ------------------
-        # Find optimal path for yourself
-    path, cost = find_optimal_path(agent.startpoint[0],
-                                   agent.startpoint[1],
-                                   agent.goal[0],
-                                   agent.goal[1],
-                                   agent.map,
-                                   agent.heuristicMap,
-                                   [],
-                                   agent.map_cols,
-                                   agent.map_rows,
-                                   Print_flag)
-    # agent.map_rows)
-
-    if path:
-        if Print_flag == 1:
-            print('cost: {} path:'.format(cost))
-            print_path(path)
-        # Create Init Msg and send it to all the agents
-        create_Send_init_msgs(path, cost, agent.agent_id, agent)
-        if Print_flag == 1:
-            print('agent{}: finished Initialization step 1'.format(agent.agent_id))
-        return 1
-    else:
-        return -1
-
-
 def print_path(path):
     for i in range(len(path)):
         path[i].print_State()
 
-
-'''
-Initialization Step 2:
-check that agent received all the init msgs 
-'''
-
-
-def initialization_step_2(agent_id, agents):
-    if Print_flag == 1:
-        print('agent{}: start Initialization step 2'.format(agent_id))
-    q = MsgsQueues[agent_id]
-    if q.qsize() == M:
-        if Print_flag == 1:
-            print("agent{} received all the init Msgs".format(agent_id))
-    else:
-        if Print_flag == 1:
-            print("Error: agent{} Not received all the init Msgs".format(agent_id))
-    if Print_flag == 1:
-        print('agent{}: finished Initialization step 2'.format(agent_id))
-
-
+        
 # Create CT.Root with the solution from the init_msgs  - return CT.root
 def Create_CT_Root_for_agent_id(agent_id, agent):
     solutions = []
@@ -158,43 +113,12 @@ def create_Send_init_msgs(path, cost, agent_id, agent, m):
             print('succsseed to put')
 
 
-def print_Msg_queue(queueToprint, name):
-    print('print {}'.format(name))
-    for i in range(queueToprint.qsize()):
-        (queueToprint.get()[2]).print_Msg()
-
-
-# check if there are more msgs to handle
-def checkMsgsQueues():
-    for i in range(len(MsgsQueues)):
-        if not MsgsQueues[i].empty():
-            if Print_flag == 1:
-                print("there are more msgs to handle...")
-            return True
-    if Print_flag == 1:
-        print("No more msgs to handle...")
-    return False
-
-
-# check if there are more CT_Nodes to handle
-def checkOpenLists(agents):
-    for i in range(M):
-        if not agents[i].openList.empty():
-            if Print_flag == 1:
-                print('more CT Nodes to handle in openList...')
-            return True
-    if Print_flag == 1:
-        print("No more CT Nodes to handle in openList")
-    return False
-
-
 def handle_agent_msgs(agent, m):
     if Print_flag == 1:
         total_msgs = counters.Counter_InitMsgs + counters.Counter_GoalMsgs + counters.Counter_NewNodeMsgs
         print('total messages:  {}  '.format(total_msgs))
         print('the turn of agent{} is START'.format(agent.agent_id))
     # Handle Incoming Messages
-    # q = agent.MsgsQueues[agent.agent_id]
     q = MsgsQueues[agent.agent_id]
     if not q.empty():
         new_msg = q.get()
@@ -214,19 +138,6 @@ def handle_agent_msgs(agent, m):
     if Print_flag == 1:
         print('the turn of agent{} is OVER'.format(agent.agent_id))
     return agent.incumbentSolutionCost
-
-
-# shawn 4
-def handle(agents):
-    counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
-    with fs.ThreadPoolExecutor() as executor:
-        for i in range(M):
-            fu = executor.submit(handle_agent_msgs, agents[i])
-        # if not fu.result() is None:
-    executor.shutdown(wait=True)
-    msgs_queues = checkMsgsQueues()
-    open_lists_ct_nodes = checkOpenLists(agents)
-    return msgs_queues, open_lists_ct_nodes
 
 
 def handleNewMsg(newmsg, agent, m):
@@ -320,9 +231,8 @@ def handleNewCT_Node(new_Node, agent, m):
                         handle_NewCTNode_Msg(CT_Node_msg, agent, m)
                     else:
                         counters.Counter_NewNodeMsgs = counters.Counter_NewNodeMsgs + 1
-                        # print("put5")
                         MsgsQueues[i].put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
-                        # shawn 5
+
     else:  # new conflict
         if Print_flag == 1:
             print('there is new conflict:')
@@ -336,7 +246,7 @@ def handleNewCT_Node(new_Node, agent, m):
                 else:
                     counters.Counter_NewNodeMsgs = counters.Counter_NewNodeMsgs + 1
                     MsgsQueues[i].put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
-                    # shawn 6
+
 
 
 # Create goal Msg and send it to all the agents
@@ -345,23 +255,11 @@ def create_Send_goal_msgs(new_Node, agent_id, agent, m):
         new_goal_Msg = Goal_Msg(new_Node, new_Node.totalCost, agent_id, i)
         counters.Counter_GoalMsgs = counters.Counter_GoalMsgs + 1
         MsgsQueues[i].put((1, counters.Counter_GoalMsgs, new_goal_Msg))
-        # shawn 7
+
         if Print_flag == 1:
             print('succeeded to put')
     if Print_flag == 1:
         print('agent{}: done handle New CT_Node'.format(agent_id))
-
-
-def initialization_step_1_M_agents(agents):
-    """
-    Initialization Step 1:
-    Find optimal path for yourself and send Init Msgs to all the agents
-    """
-    for i in range(M):
-        check_path = initialization_step_1(agents[i])
-        if check_path == -1:
-            print('exit')
-            sys.exit("there is no solution")
 
 
 def init_step1(agent, m):
@@ -387,51 +285,24 @@ def init_step1(agent, m):
         # sys.exit("there is no solution")
 
 
-'''
-Initialization Step 2:
-check that agent received all the init msgs 
-'''
-
-
-def initialization_step_2_M_agents(agents):
-    for i in range(M):
-        initialization_step_2(agents[i].agent_id, agents)
-
-
 def Create_CT_Roots_for_an_agent(agent, m):
     CT_Root = Create_CT_Root_for_agent_id(agent.agent_id, agent)
     counters.openListCounter = counters.openListCounter + 1
     agent.openList.put((CT_Root.totalCost, counters.openListCounter, CT_Root))
 
 
-def Create_CT_Roots_for_M_agents(agents):
-    for i in range(M):
-        CT_Root = Create_CT_Root_for_agent_id(agents[i].agent_id, agents[i])
-        if Print_flag == 1:
-            print('\nPrint CT_root for agent{}'.format(i))
-            CT_Root.print_CT_Node()
-        counters.openListCounter = counters.openListCounter + 1
-        agents[i].openList.put((CT_Root.totalCost, counters.openListCounter, CT_Root))
-
-
-# def New_Agent(i, start_point, goal, map, constrains, incumbentSolutionCost, incumbentSolution, map_cols, map_rows,
-#               msgs_queues):
-#     a = Agent(i, start_point, goal, map, constrains, incumbentSolutionCost, incumbentSolution, map_cols, map_rows,
-#               msgs_queues)
-#     # a.start()
-#     return a
-
 def handle_agent_i(agent, m):
     # Main Process(Agent Ai)
-    msgs_queues = not MsgsQueues[agent.agent_id].empty()
-    open_lists_ct_nodes = not agent.openList.empty()
-    while msgs_queues or open_lists_ct_nodes:
+    msgs_queues_not_empty = not MsgsQueues[agent.agent_id].empty()
+    open_lists_ct_nodes_not_empty = not agent.openList.empty()
+    while msgs_queues_not_empty or open_lists_ct_nodes_not_empty:
+
         '''Handle a new CTNode from OpenSet
         Handle Incoming Messages'''
         counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
         handle_agent_msgs(agent, m)
-        msgs_queues = not MsgsQueues[agent.agent_id].empty()
-        open_lists_ct_nodes = not agent.openList.empty()
+        msgs_queues_not_empty = not MsgsQueues[agent.agent_id].empty()
+        open_lists_ct_nodes_not_empty = not agent.openList.empty()
     return agent.incumbentSolutionCost
 
 
@@ -450,10 +321,12 @@ def Main_program(m, number_of_iterations):
     runs = 0
     while runs < number_of_iterations:
         runs += 1
-        print('________________________{} Agents______________________________'.format(m))
+        print('________________________{} Agents______________________________ iteration: {} \t map: {}'.format(m, runs,
+                                                                                                                mapa))
         # Set the problem data
         agents = []
-        test_map, map_cols, map_rows, startpoints, goals = map1_22X28(m)
+        test_map, map_cols, map_rows, startpoints, goals = run_scene(scen, mapa, m)
+
         start = time.time()
         # list of Priority Queues msgs
         for i in range(m):
@@ -480,18 +353,19 @@ def Main_program(m, number_of_iterations):
         print('RoundRobin_Iterations:{}\nCounter expanded Nodes:{}'.format(counters.RoundRobin_Iterations,
                                                                            counters.Counter_expand_Nodes))
         print('time taken: {}'.format(end - start))
-        # df = add_new_result_to_cvs('map1_22X28.map-1.scen', 'map1_22X28.map', m, solCost,
-        #                            end - start,
-        #                            counters.Counter_InitMsgs, counters.Counter_NewNodeMsgs,
-        #                            counters.Counter_GoalMsgs,
-        #                            total_msgs, counters.Counter_expand_Nodes, counters.RoundRobin_Iterations)
-        # new_line(df)
+
+        df = add_new_result_to_cvs(scen, mapa, m, solCost,
+                                   end - start,
+                                   counters.Counter_InitMsgs, counters.Counter_NewNodeMsgs,
+                                   counters.Counter_GoalMsgs,
+                                   total_msgs, counters.Counter_expand_Nodes, counters.RoundRobin_Iterations)
+        new_line(df)
+
         MsgsQueues.clear()
         counters.clear()
 
 
 if __name__ == "__main__":
-    # execute only if run as a script
-    # for number_of_agents in range(3, 6):
     for number_of_agents in range(M):
-        Main_program(number_of_agents + 1, 1)
+        Main_program(number_of_agents + 1, 50)
+

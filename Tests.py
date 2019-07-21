@@ -90,6 +90,11 @@ def tests():
     # den312d(20)
     map1_22X28(6)
 
+def run_scene(scen, mapa, numOfAgents):
+    map_rows, map_cols, map1 = txtfile_to_2D_map(mapa)
+    startpoints, goals = scan_txtfile_to_start_goal_lists(scen)
+    return map1, map_cols, map_rows, startpoints, goals
+
 
 def ht_chantry(numOfAgents):
     map_rows, map_cols, map1 = txtfile_to_2D_map('Maps_files/map1_22X28.map')

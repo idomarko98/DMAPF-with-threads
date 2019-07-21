@@ -87,7 +87,7 @@ def add_new_result_to_cvs(fname_test, fname_map, numberOfAgents, cost, time, ini
 # the function gets a new frame and append it to the results excel file.
 def new_line(df):
     folder_path = 'C:/Users/User/PycharmProjects/DMAPF with threads'
-    df.to_csv(os.path.join(folder_path, 'results{:d} distributed.csv'.format(df.at[0, 'Number of Agents'])),
+    df.to_csv(os.path.join(folder_path, 'results.csv'.format(df.at[0, 'Number of Agents'])),
               columns=['File', 'Map', 'Number of Agents', 'Cost', 'time', 'init_msgs', 'CT_Node_msgs', 'Goal Msgs',
                        'total_msgs', 'expanded_nodes', 'roundRobinIteration'], header=False, index=False, mode='a')
     df.to_csv()
