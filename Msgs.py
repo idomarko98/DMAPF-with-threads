@@ -1,6 +1,7 @@
 # Parent class
 import copy
 
+
 class Msg:
     def __init__(self, type, source, destination):
         self.type = type
