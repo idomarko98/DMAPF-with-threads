@@ -95,6 +95,7 @@ def run_scene(scen, mapa, numOfAgents):
     startpoints, goals = scan_txtfile_to_start_goal_lists(scen)
     return map1, map_cols, map_rows, startpoints, goals
 
+
 def ht_chantry(numOfAgents):
     map_rows, map_cols, map1 = txtfile_to_2D_map('Maps_files/map1_22X28.map')
     startpoints, goals = scan_txtfile_to_start_goal_lists('Tests_files/ht_chantry.map-1.scen')

@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 df = pd.read_csv('results.csv')
 for file in df['File']:
     print(file)
-
 
 for i in range(1, 7):
     df1 = pd.read_csv('results{}.csv'.format(i))

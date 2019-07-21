@@ -16,6 +16,7 @@ Print_flag = 0
 
 M = 6
 MsgsQueues = []
+
 scenArr = ['Tests_files/den312d.map-1.scen', 'Tests_files/empty-8-8.map-1.scen',
            'Tests_files/empty-48-48.map-1.scen', 'Tests_files/ht_chantry.map-1.scen',
            'Tests_files/maze-32-32-2.map-1.scen', 'Tests_files/random-32-32-10.map-10.scen',
@@ -27,7 +28,6 @@ mapArr = ['Maps_files/den312d.map', 'Maps_files/empty-8-8.map', 'Maps_files/empt
           'Maps_files/room-64-64-8.map']
 scen = 'Tests_files/map1_22X28.map-1.scen'
 mapa = 'Maps_files/map1_22X28.map'
-
 
 class Counters:
     def __init__(self):
@@ -80,6 +80,7 @@ def print_path(path):
     for i in range(len(path)):
         path[i].print_State()
 
+        
 # Create CT.Root with the solution from the init_msgs  - return CT.root
 def Create_CT_Root_for_agent_id(agent_id, agent):
     solutions = []
@@ -231,6 +232,7 @@ def handleNewCT_Node(new_Node, agent, m):
                     else:
                         counters.Counter_NewNodeMsgs = counters.Counter_NewNodeMsgs + 1
                         MsgsQueues[i].put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
+
     else:  # new conflict
         if Print_flag == 1:
             print('there is new conflict:')
@@ -246,12 +248,14 @@ def handleNewCT_Node(new_Node, agent, m):
                     MsgsQueues[i].put((3, counters.Counter_NewNodeMsgs, CT_Node_msg))
 
 
+
 # Create goal Msg and send it to all the agents
 def create_Send_goal_msgs(new_Node, agent_id, agent, m):
     for i in range(m):
         new_goal_Msg = Goal_Msg(new_Node, new_Node.totalCost, agent_id, i)
         counters.Counter_GoalMsgs = counters.Counter_GoalMsgs + 1
         MsgsQueues[i].put((1, counters.Counter_GoalMsgs, new_goal_Msg))
+
         if Print_flag == 1:
             print('succeeded to put')
     if Print_flag == 1:
@@ -292,6 +296,7 @@ def handle_agent_i(agent, m):
     msgs_queues_not_empty = not MsgsQueues[agent.agent_id].empty()
     open_lists_ct_nodes_not_empty = not agent.openList.empty()
     while msgs_queues_not_empty or open_lists_ct_nodes_not_empty:
+
         '''Handle a new CTNode from OpenSet
         Handle Incoming Messages'''
         counters.RoundRobin_Iterations = counters.RoundRobin_Iterations + 1
@@ -321,6 +326,7 @@ def Main_program(m, number_of_iterations):
         # Set the problem data
         agents = []
         test_map, map_cols, map_rows, startpoints, goals = run_scene(scen, mapa, m)
+
         start = time.time()
         # list of Priority Queues msgs
         for i in range(m):
@@ -347,12 +353,14 @@ def Main_program(m, number_of_iterations):
         print('RoundRobin_Iterations:{}\nCounter expanded Nodes:{}'.format(counters.RoundRobin_Iterations,
                                                                            counters.Counter_expand_Nodes))
         print('time taken: {}'.format(end - start))
+
         df = add_new_result_to_cvs(scen, mapa, m, solCost,
                                    end - start,
                                    counters.Counter_InitMsgs, counters.Counter_NewNodeMsgs,
                                    counters.Counter_GoalMsgs,
                                    total_msgs, counters.Counter_expand_Nodes, counters.RoundRobin_Iterations)
         new_line(df)
+
         MsgsQueues.clear()
         counters.clear()
 
@@ -360,3 +368,4 @@ def Main_program(m, number_of_iterations):
 if __name__ == "__main__":
     for number_of_agents in range(M):
         Main_program(number_of_agents + 1, 50)
+
